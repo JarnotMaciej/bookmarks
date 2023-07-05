@@ -1,0 +1,37 @@
+<figure class="text-center">
+    <blockquote class="blockquote">
+        <p>List of bookmarks</p>
+    </blockquote>
+</figure>
+<table class="table table-hover">
+    <caption>All of your bookmarks are here!</caption>
+    <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">URL</th>
+            <th scope="col">Tags</th>
+            <th scope="col">Visited</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for document in data %}
+        <tr>
+            <td>{{ document.name }}Name will be here</td>
+            <td><a href="https://{{ document.url }}" style="color: #a82227;" target="_blank">{{ document.url
+                    }}</a></td>
+            <td>
+                {% for tag in document.tags %}
+                <span class="badge rounded-pill" style="background-color: #a82227; font-weight: normal;">{{ tag }}</span>
+                {% endfor %}
+            </td>
+            <td>
+                {% if document.visited %}
+                <span class="badge text-bg-success" style="font-weight: normal;">Yes</span>
+                {% else %}
+                <span class="badge text-bg-danger" style="font-weight: normal;">No</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
