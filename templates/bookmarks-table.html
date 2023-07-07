@@ -7,21 +7,19 @@
     <caption>All of your bookmarks are here!</caption>
     <thead>
         <tr>
-            <th scope="col">Name</th>
-            <th scope="col">URL</th>
+            <th scope="col">Website</th>
             <th scope="col">Tags</th>
             <th scope="col">Visited</th>
         </tr>
     </thead>
     <tbody class="table-group-divider">
-        {% for document in data %}
+        {% for document in bookmarks %}
         <tr>
-            <td>{{ document.name }}Name will be here</td>
-            <td><a href="https://{{ document.url }}" style="color: #a82227;" target="_blank">{{ document.url
+            <td><a href="https://{{ document.url }}" class="text-primary-emphasis" target="_blank">{{ document.name
                     }}</a></td>
             <td>
                 {% for tag in document.tags %}
-                <span class="badge rounded-pill" style="background-color: #a82227; font-weight: normal;">{{ tag }}</span>
+                            <span class="badge rounded-pill" style="background-color: #{{ tag.color }}; font-weight: normal;">{{ tag.name }}</span>
                 {% endfor %}
             </td>
             <td>

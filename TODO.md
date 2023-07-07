@@ -6,12 +6,16 @@ Project Description
 
 ### Todo
 
-- [ ] js need to be separated and loaded at the end  
-- [ ] templates fix  
+- [ ] duplicates shouldnt be added  
+- [ ] adding, editing, deleting bookmarks  
 
 ### In Progress
 
+- [ ] editing, deleting tags using bootstrap modal  
 
 ### Done ✓
 
+- [x] js need to be separated and loaded at the end  
+- [x] templates fix  
+- [x] tags colors  
 
