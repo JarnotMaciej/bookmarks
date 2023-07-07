@@ -1,18 +1,15 @@
-<figure class="text-center" style="margin: 8pt;">
-    <blockquote class="blockquote">
-        <p>List of your tags</p>
-    </blockquote>
-</figure>
 <div class="container text-center">
+    <h3 class="m-4" style="font-weight: normal;">List of your tags</h3>
     <div class="row align-items-start">
         <div class="col">
         </div>
-        <div class="col-6">
+        <div class="col-12 col-md-9">
             {% for tag in tags %}
-            <span class="badge rounded-pill"
-                style="background-color: #{{ tag.color }}; font-size: calc(1.275rem + .3vw); margin: 8pt; font-weight: normal;"
+            <span class="badge rounded-pill m-2"
+                style="background-color: #{{ tag.color }}; font-size: calc(1.275rem + .3vw); font-weight: normal;"
                 data-bs-toggle="modal" data-bs-target="#editTags">{{ tag.name }}</span>
             {% endfor %}
+            <h6 class="m-3" style="font-weight: normal;">You can edit or remove the tag by clicking on it.</h6>
         </div>
         <div class="col">
         </div>
@@ -24,11 +21,31 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit the tag</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit the tag <i><span id="tagNameTitle"></span></i>
+                </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Itaque nemo doloribus ea debitis minima similique, quos officia aperiam excepturi rerum amet accusamus aspernatur in optio numquam nesciunt rem id ut.
+            <div class="modal-body justify-content-center" id="modal-to-edit">
+                <form class="align-items-center" method="POST">
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-auto">
+                            <label for="tagName" class="form-label">
+                                <h5>Change name and color of the tag</h5>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-auto">
+                            <input type="text" class="form-control" id="editTagName" name="editTagName"
+                                placeholder="Tag name">
+                        </div>
+
+                        <div class="col-auto">
+                            <input type="color" class="form-control form-control-color" id="editTagColor"
+                                name="editTagColor" value="#9e2a2a">
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -38,3 +55,5 @@
         </div>
     </div>
 </div>
+
+<script src="/static/js/tags.js"></script>

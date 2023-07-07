@@ -1,5 +1,6 @@
 import re
-from flask import Flask, render_template, request
+import time
+from flask import Flask, render_template, request, jsonify, redirect
 from pymongo import MongoClient
 
 app = Flask(__name__)
@@ -75,19 +76,55 @@ def index():
 @app.route('/tags', methods=['GET', 'POST'])
 def tags():
     current_page = 'tags'
-    # Insert the new tag into the database
-    if request.method == 'POST':
-        name = request.form.get('tagName')
-        color = request.form.get('tagColor') 
-        if color[0] == '#':
-            color = color[1:]
-        if validate_tag_name(name) and validate_color(color):
-            insert_tag(name, color)
 
     # Fetch data from MongoDB
     tags = tags_collection.find().sort('name', 1)
 
     return render_template('tags.html', tags=tags, page=current_page)
+
+@app.route('/add-tag', methods=['POST'])
+def add_tag():
+    name = request.form.get('tagName')
+    color = request.form.get('tagColor') 
+    if color[0] == '#':
+        color = color[1:]
+    if validate_tag_name(name) and validate_color(color):
+        insert_tag(name, color)
+
+    return redirect('/tags')
+
+@app.route('/delete-tag', methods=['DELETE'])
+def delete_tag():
+    tag_name = request.get_json().get('tagName')
+    tags_collection.delete_one({'name': tag_name})
+    # update bookmarks
+    for bookmark in bookmarks_collection.find():
+        if tag_name in bookmark['tags']:
+            bookmark['tags'].remove(tag_name)
+            bookmarks_collection.update_one({'name': bookmark['name']}, {'$set': {'tags': bookmark['tags']}})
+
+    return jsonify({'message': 'Tag deleted successfully'})
+
+# edit tag
+@app.route('/edit-tag', methods=['POST'])
+def edit_tag():
+    tag_name = request.form.get('tagName')
+    new_name = request.form.get('newTagName')
+    new_color = request.form.get('newTagColor')
+    if new_color[0] == '#':
+        new_color = new_color[1:]
+    if validate_tag_name(new_name) and validate_color(new_color):
+
+        tags_collection.update_one({'name': tag_name}, {'$set': {'name': new_name, 'color': new_color}})
+        # update bookmarks
+        for bookmark in bookmarks_collection.find():
+            if tag_name in bookmark['tags']:
+                bookmark['tags'].remove(tag_name)
+                bookmark['tags'].append(new_name)
+                bookmarks_collection.update_one({'name': bookmark['name']}, {'$set': {'tags': bookmark['tags']}})
+
+    return jsonify({'message': 'Tag edited successfully'})
+
 
 @app.errorhandler(404)
 def page_not_found(error):

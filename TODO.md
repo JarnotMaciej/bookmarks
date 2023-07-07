@@ -6,16 +6,16 @@ Project Description
 
 ### Todo
 
-- [ ] duplicates shouldnt be added  
+- [ ] duplicates shouldnt be added -> tags and bookmarks also  
 - [ ] adding, editing, deleting bookmarks  
 
 ### In Progress
 
-- [ ] editing, deleting tags using bootstrap modal  
 
 ### Done ✓
 
 - [x] js need to be separated and loaded at the end  
 - [x] templates fix  
 - [x] tags colors  
+- [x] editing, deleting tags using bootstrap modal  
 

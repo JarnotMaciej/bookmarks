@@ -5,34 +5,41 @@
                 <th scope="col"></th>
             </tr>
         </thead>
-        <tbody><tr><td>
-    <div class="row align-items-center">
-        <div class="col">
-        </div>
-        <div class="col-6">
-            <form class="align-items-center" method="POST" action="/tags">
-                <div class="row justify-content-center">
-                    <div class="col-auto">
-                        <label for="tagName" class="form-label"><h4>Choose name and color of the tag</h4></label>
+        <tbody>
+            <tr>
+                <td>
+                    <div class="row align-items-center">
+                        <div class="col col-to-hide">
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <form class="align-items-center" method="POST" action="/add-tag">
+                                <div class="row justify-content-center">
+                                    <div class="col-auto">
+                                        <h4 class="m-4" style="font-weight: normal">Choose name and color of the tag
+                                        </h4>
+                                    </div>
+                                </div>
+                                <div class="row g-3 justify-content-center">
+                                    <div class="col-auto">
+                                        <input type="text" class="form-control" id="tagName" name="tagName"
+                                            placeholder="Tag name">
+                                    </div>
+                                    <div class="col-auto">
+                                        <input type="color" class="form-control form-control-color" id="tagColor"
+                                            name="tagColor" value="#9e2a2a">
+                                    </div>
+                                </div>
+                                <div class="row g-3 m-4">
+                                    <button type="submit" id="addTagBtn" class="btn btn-primary"
+                                        style="max-width: 400px; margin: auto;">Add tag</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="col col-to-hide">
+                        </div>
                     </div>
-                </div>
-                <div class="row g-3 justify-content-center">
-                    <div class="col-auto">
-                        <input type="text" class="form-control" id="tagName" name="tagName" placeholder="Tag name">
-                    </div>
-                    <div class="col-auto">
-                        <input type="color" class="form-control form-control-color" id="tagColor" name="tagColor" value="#9e2a2a">
-                    </div>
-                </div>
-                <div class="row g-3" style="margin: 8pt;">
-                    <button type="submit" class="btn btn-primary">Add tag</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="col">
-        </div>
-    </div>
-</td></tr></tbody>
-</table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
