@@ -6,7 +6,9 @@ Project Description
 
 ### Todo
 
-- [ ] duplicates shouldnt be added -> tags and bookmarks also  
+- [ ] bookmark is visited after clicking at the link  
+- [ ] fixing 'current site'  
+- [ ] duplicates shouldnt be added in bookmarks  
 - [ ] adding, editing, deleting bookmarks  
 
 ### In Progress
@@ -15,7 +17,6 @@ Project Description
 ### Done ✓
 
 - [x] js need to be separated and loaded at the end  
-- [x] templates fix  
-- [x] tags colors  
 - [x] editing, deleting tags using bootstrap modal  
+- [x] no tags duplicates on adding and editing  
 

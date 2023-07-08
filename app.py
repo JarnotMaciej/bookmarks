@@ -14,7 +14,6 @@ tags_collection = db['tags']
 # Set the current page
 current_page = 'home'
 
-
 ### Functions ###
 
 def insert_tag(name, color):
@@ -89,8 +88,11 @@ def add_tag():
     if color[0] == '#':
         color = color[1:]
     if validate_tag_name(name) and validate_color(color):
+        # check if tag already exists
+        for tag in tags_collection.find():
+            if tag['name'] == name:
+                return redirect('/tags')
         insert_tag(name, color)
-
     return redirect('/tags')
 
 @app.route('/delete-tag', methods=['DELETE'])
@@ -105,17 +107,24 @@ def delete_tag():
 
     return jsonify({'message': 'Tag deleted successfully'})
 
-# edit tag
 @app.route('/edit-tag', methods=['POST'])
 def edit_tag():
     tag_name = request.form.get('tagName')
     new_name = request.form.get('newTagName')
     new_color = request.form.get('newTagColor')
+
     if new_color[0] == '#':
         new_color = new_color[1:]
     if validate_tag_name(new_name) and validate_color(new_color):
+        if tag_name == new_name:
+            tags_collection.update_one({'name': tag_name}, {'$set': {'color': new_color}})
+        else:
+            # check if new name already exists
+            for tag in tags_collection.find():
+                if tag['name'] == new_name:
+                    return jsonify({'message': 'Tag already exists'})
+            tags_collection.update_one({'name': tag_name}, {'$set': {'name': new_name, 'color': new_color}})
 
-        tags_collection.update_one({'name': tag_name}, {'$set': {'name': new_name, 'color': new_color}})
         # update bookmarks
         for bookmark in bookmarks_collection.find():
             if tag_name in bookmark['tags']:

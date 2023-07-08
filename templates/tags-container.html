@@ -21,7 +21,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit the tag <i><span id="tagNameTitle"></span></i>
+                <h1 class="modal-title fs-5" id="exampleModalLabel" style="font-weight: normal;">Edit the tag <i><span id="tagNameTitle"></span></i>
                 </h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -30,7 +30,7 @@
                     <div class="row g-3 justify-content-center">
                         <div class="col-auto">
                             <label for="tagName" class="form-label">
-                                <h5>Change name and color of the tag</h5>
+                                <h5 style="font-weight: normal;">Change name and color of the tag</h5>
                             </label>
                         </div>
                     </div>
@@ -44,6 +44,11 @@
                             <input type="color" class="form-control form-control-color" id="editTagColor"
                                 name="editTagColor" value="#9e2a2a">
                         </div>
+                    </div>
+                    <div class="row g-3 m-2 justify-content-center">
+                        <div class="col-auto">
+                        <h6 style="font-weight: normal;">Tag name cannot be a duplicate.</h6>
+                    </div>
                     </div>
                 </form>
             </div>
