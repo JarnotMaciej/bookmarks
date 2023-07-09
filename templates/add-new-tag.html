@@ -1,4 +1,4 @@
-<div class="container text-center bd-example-snippet bd-code-snippet">
+<div class="container text-center">
     <table class="table">
         <thead>
             <tr>
@@ -9,36 +9,35 @@
             <tr>
                 <td>
                     <div class="row align-items-center">
-                        <div class="col col-to-hide">
+                        <div class="col">
                         </div>
                         <div class="col-12 col-md-9">
                             <form class="align-items-center" method="POST" action="/add-tag">
                                 <div class="row justify-content-center">
                                     <div class="col-auto">
-                                        <h3 class="m-4" style="font-weight: normal">Choose name and color of the tag
+                                        <h3 class="m-4" style="font-weight: normal">Add a new tag
                                         </h3>
+                                        <h5 class="m-4" style="font-weight: normal">Choose the name and color of the tag</h5>
                                     </div>
                                 </div>
                                 <div class="row g-3 justify-content-center">
                                     <div class="col-auto">
-                                        <input type="text" class="form-control" id="tagName" name="tagName"
+                                        <input type="text" class="form-control form-control-lg" id="tagName" name="tagName"
                                             placeholder="Tag name">
                                     </div>
                                     <div class="col-auto">
-                                        <input type="color" class="form-control form-control-color" id="tagColor"
+                                        <input type="color" class="form-control form-control-color form-control-lg" id="tagColor"
                                             name="tagColor" value="#9e2a2a">
                                     </div>
                                 </div>
-                                <div class="row g-3 m-2">
-                                    <h6 style="font-weight: normal;">Duplicates won't be added.</h6>
-                                </div>
+
                                 <div class="row g-3 m-4">
                                     <button type="submit" id="addTagBtn" class="btn btn-primary"
-                                        style="max-width: 400px; margin: auto;">Add tag</button>
+                                        style="max-width: 324px; margin: auto;">Add tag</button>
                                 </div>
                             </form>
                         </div>
-                        <div class="col col-to-hide">
+                        <div class="col">
                         </div>
                     </div>
                 </td>

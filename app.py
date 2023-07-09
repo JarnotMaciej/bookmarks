@@ -1,7 +1,7 @@
-import re
-import time
 from flask import Flask, render_template, request, jsonify, redirect
 from pymongo import MongoClient
+import utils.validation as validation
+import utils.normalization as normalization
 
 app = Flask(__name__)
 
@@ -20,24 +20,9 @@ def insert_tag(name, color):
     '''Inserts a tag into the database'''
     tags_collection.insert_one({'name': name, 'color': color})
 
-def insert_bookmark(title, url, tags):
+def insert_bookmark(name, url, tags):
     '''Inserts a bookmark into the database'''
-    bookmarks_collection.insert_one({'title': title, 'url': url, 'tags': tags, 'viewed': False})
-
-def validate_color(color):
-    '''Validates the color'''
-    if len(color) != 6:
-        return False
-    try:
-        int(color, 16)
-        return True
-    except ValueError:
-        return False
-    
-def validate_tag_name(name):
-    '''Validates the tag name'''
-    pattern = r"^[0-9a-zA-Z\s]{1,128}$"
-    return re.match(pattern, name) is not None
+    bookmarks_collection.insert_one({'name': name, 'url': url, 'tags': tags, 'visited': False})
 
 def assign_tag_colors(bookmarks_collection, tags_collection):
     '''Assigns a color to each tag'''
@@ -81,13 +66,39 @@ def tags():
 
     return render_template('tags.html', tags=tags, page=current_page)
 
+@app.route('/add-bookmark')
+def add_bookmark():
+    tags = tags_collection.find().sort('name', 1)
+    current_page = 'tags'
+
+    return render_template('add-bookmark.html', page=current_page, tags=tags)
+
+@app.route('/add-bookmark-execute', methods=['POST'])
+def add_bookmark_execute():
+    name = request.get_json().get('name')
+    url = normalization.url_normalization(request.get_json().get('url'))
+    tags = request.get_json().get('tags')
+    
+    if validation.validate_bookmark_name(name) and validation.validate_url(url) and validation.validate_tags(tags):
+        # check if bookmark already exists
+        for bookmark in bookmarks_collection.find():
+            if bookmark['name'] == name:
+                return jsonify({'message': 'Bookmark already exists'})
+            if bookmark['url'] == url:
+                return jsonify({'message': 'Bookmark already exists'})
+        insert_bookmark(name, url, tags)
+    
+    return jsonify({'message': 'Bookmark added successfully'})
+
+####################
+
 @app.route('/add-tag', methods=['POST'])
 def add_tag():
     name = request.form.get('tagName')
     color = request.form.get('tagColor') 
     if color[0] == '#':
         color = color[1:]
-    if validate_tag_name(name) and validate_color(color):
+    if validation.validate_tag_name(name) and validation.validate_color(color):
         # check if tag already exists
         for tag in tags_collection.find():
             if tag['name'] == name:
@@ -115,7 +126,7 @@ def edit_tag():
 
     if new_color[0] == '#':
         new_color = new_color[1:]
-    if validate_tag_name(new_name) and validate_color(new_color):
+    if validation.validate_tag_name(new_name) and validation.validate_color(new_color):
         if tag_name == new_name:
             tags_collection.update_one({'name': tag_name}, {'$set': {'color': new_color}})
         else:
@@ -133,7 +144,6 @@ def edit_tag():
                 bookmarks_collection.update_one({'name': bookmark['name']}, {'$set': {'tags': bookmark['tags']}})
 
     return jsonify({'message': 'Tag edited successfully'})
-
 
 @app.errorhandler(404)
 def page_not_found(error):
