@@ -1,20 +1,3 @@
-/* .custom-scrollbar::-webkit-scrollbar-track {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    background-color: #8b9197;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-    border-radius: 10px;
-    width: 6px;
-    background-color: #8b9197;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #2f71fc;
-} */
-
 .custom-scrollbar::-webkit-scrollbar-track {
     -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
     background-color: #222529;
@@ -32,17 +15,6 @@
     background-color: #2f71fc;
 }
 
-.editButton {
+.editButton, .editTagBadge {
     cursor: pointer;
-}
-
-.editTagBadge {
-    cursor: pointer;
-    border: 0px solid #c6d0ed;
-}
-
-.editTagBadgeChecked {
-    cursor: pointer;
-    border: 4px solid #c6d0ed;
-    transition: cubic-bezier(0.215, 0.610, 0.355, 1);
 }

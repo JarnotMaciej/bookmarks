@@ -79,17 +79,17 @@
                                 name="editBookmarkURL" placeholder="Bookmark URL">
                         </div>
                     </div>
-                    <div class="row g-3 justify-content-center">
-                        <div class="col-auto">
-                            <h5 class="m-2" style="font-weight: normal;">Change tags of the bookmark</h5>
+                    <div class="row g-3 justify-content-center overflow-y-scroll scrollbar custom-scrollbar" style="max-height: 200px;">
+                        <!-- checkboxes goes here -->
+                        {% for tag in editTags %}
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="{{ tag.name }}">
+                            <label class="form-check-label" for="{{ tag.name }}">
+                                <span class="badge rounded-pill editTagBadge"
+                                style="background-color: #{{ tag.color }}; font-weight: normal;">{{ tag.name }}</span>
+                            </label>
                         </div>
-                        <div class="col-auto">
-                            {% for tag in editTags %}
-                            <span class="badge rounded-pill m-1 editTagBadge"
-                                style="background-color: #{{ tag.color }}; font-weight: normal;">{{
-                                tag.name }}</span>
-                            {% endfor %}
-                        </div>
+                        {% endfor %}
                     </div>
                     <div class="row g-3 m-2 justify-content-center">
                         <div class="col-auto">
@@ -100,16 +100,15 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-danger">Delete Bookmark</button>
-                <button type="button" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-danger" id="deleteBookmarkButton">Delete Bookmark</button>
+                <button type="button" class="btn btn-primary" id="saveChangesButton">Save Changes</button>
             </div>
         </div>
     </div>
 </div>
 
-
 <script>
-    // edit conent of boomarkNameTitle according to the click of editButton
+    // edit content of bookmarkNameTitle according to the click of editButton
 
     function assignToModal() {
         let bookmarkNameTitle = document.getElementById("boomarkNameTitle");
@@ -118,19 +117,23 @@
         let editBookmarkURL = document.getElementById("editBookmarkURL");
         let editTagBadges = document.getElementsByClassName("editTagBadge");
 
+        let editTagIDs = [];
+        for (let i = 0; i < editTagBadges.length; i++) {
+            editTagIDs.push(editTagBadges[i].innerText);
+        }
 
         for (let i = 0; i < editButtons.length; i++) {
             editButtons[i].addEventListener("click", function () {
                 bookmarkNameTitle.innerHTML = this.parentNode.parentNode.childNodes[1].textContent;
 
-                //values of the input fields are set to the current values of the bookmark
+                // values of the input fields are set to the current values of the bookmark
                 editBookmarkName.value = this.parentNode.parentNode.childNodes[1].textContent;
 
                 let innerHTML = this.parentNode.parentNode.childNodes[1].innerHTML;
                 let url = innerHTML.match(/href="https?:\/\/([^"]+)"/)[1];
-                let urlWithoutProtocol = url.replace(/^https?:\/\//, ''); editBookmarkURL.value = url;
+                let urlWithoutProtocol = url.replace(/^https?:\/\//, '');
+                editBookmarkURL.value = url;
 
-                console.log(this.parentNode.parentNode.childNodes[3]);
                 badges = this.parentNode.parentNode.childNodes[3].getElementsByClassName("badge");
 
                 // get text inside the badges
@@ -139,24 +142,74 @@
                     tags.push(badges[i].textContent);
                 }
 
-                console.log(tags);
-
-                // this is fucked up
+                // check the checkboxes that match the tags
                 for (let i = 0; i < editTagBadges.length; i++) {
-                    if (tags.includes(editTagBadges[i].textContent)) {
-                        editTagBadges[i].classList.add("editTagBadgeChecked");
-                        editTagBadges[i].classList.remove("editTagBadge");
-                        console.log(editTagBadges[i].textContent, "in tags");
-                    } else {
-                        editTagBadges[i].classList.remove("editTagBadgeChecked");
-                        editTagBadges[i].classList.add("editTagBadge");
-                        console.log(editTagBadges[i].textContent, "not in tags");
-                    }
+                    let isTagPresent = tags.includes(editTagBadges[i].textContent);
+                    document.getElementById(editTagBadges[i].textContent).checked = isTagPresent;
                 }
             });
         }
-
     }
 
+    function deleteBookmark() {
+        let bookmarkToDeleteName = document.getElementById("boomarkNameTitle").textContent;
+
+        fetch('/delete-bookmark', {
+            method: 'DELETE',
+            body: JSON.stringify({ name: bookmarkToDeleteName }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                // Handle the response from the backend
+                // For example, you can reload the page or update the bookmark list
+                console.log('Bookmark deleted successfully');
+                location.reload();
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the request
+                console.error('Error deleting bookmark:', error);
+            });
+    }
+
+    // Function to save changes to a bookmark
+    function saveChanges() {
+        let bookmarkToEditName = document.getElementById("boomarkNameTitle").textContent;
+        let editBookmarkName = document.getElementById("editBookmarkName").value;
+        let editBookmarkURL = document.getElementById("editBookmarkURL").value;
+        let editTagBadges = document.getElementsByClassName("editTagBadge");
+
+        const updatedBookmark = {
+            name: bookmarkToEditName,
+            nameToUpdate: document.getElementById('editBookmarkName').value,
+            url: document.getElementById('editBookmarkURL').value,
+            // Retrieve the selected tags from the checkboxes and add them to the 'tags' property of 'updatedBookmark'
+            tags: Array.from(document.querySelectorAll('.form-check-input:checked')).map(checkbox => checkbox.id)
+        };
+
+        // Send the updated bookmark data to the backend using AJAX or fetch
+        // Example using fetch:
+        fetch('/update-bookmark', {
+            method: 'POST',
+            body: JSON.stringify(updatedBookmark),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => {
+                // Handle the response from the backend
+                // For example, you can reload the page or update the bookmark list
+                console.log('Bookmark updated successfully');
+                location.reload();
+            })
+            .catch(error => {
+                // Handle any errors that occurred during the request
+                console.error('Error updating bookmark:', error);
+            });
+    }
+
+    document.getElementById('deleteBookmarkButton').addEventListener('click', deleteBookmark);
+    document.getElementById('saveChangesButton').addEventListener('click', saveChanges);
     assignToModal();
 </script>

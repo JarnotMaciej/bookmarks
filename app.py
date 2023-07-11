@@ -6,7 +6,7 @@ import utils.normalization as normalization
 app = Flask(__name__)
 
 # Connection to MongoDB
-client = MongoClient('192.168.21.8', 32769)
+client = MongoClient('192.168.21.8', 32770)
 db = client['mydb']
 bookmarks_collection = db['bookmarks']
 tags_collection = db['tags']
@@ -15,7 +15,6 @@ tags_collection = db['tags']
 current_page = 'home'
 
 ### Functions ###
-
 def insert_tag(name, color):
     '''Inserts a tag into the database'''
     tags_collection.insert_one({'name': name, 'color': color})
@@ -51,7 +50,7 @@ def index():
     current_page = 'home'
     # Fetch data from MongoDB
     bookmarks = bookmarks_collection.find().sort('name', 1)
-    tags = tags_collection.find()
+    tags = tags_collection.find().sort('name', 1)
 
     modified_bookmarks = assign_tag_colors(bookmarks, tags_collection.find())
 
@@ -89,6 +88,40 @@ def add_bookmark_execute():
         insert_bookmark(name, url, tags)
     
     return jsonify({'message': 'Bookmark added successfully'})
+
+@app.route('/delete-bookmark', methods=['DELETE'])
+def delete_bookmark():
+    name = request.get_json().get('name')
+    bookmarks_collection.delete_one({'name': name})
+
+    return jsonify({'message': 'Bookmark deleted successfully'})
+
+@app.route('/update-bookmark', methods=['POST'])
+def update_bookmark():
+    name = request.get_json().get('name')
+    name_to_update = request.get_json().get('nameToUpdate')
+    url = normalization.url_normalization(request.get_json().get('url'))
+    tags = request.get_json().get('tags')
+    old_url = bookmarks_collection.find_one({'name': name})['url']
+
+    print(name, name_to_update, old_url, url, tags)
+
+    if validation.validate_bookmark_name(name) and validation.validate_url(url) and validation.validate_tags(tags):
+        # check if bookmark already exists
+        if name != name_to_update:
+            for bookmark in bookmarks_collection.find():
+                if bookmark['name'] == name_to_update:
+                    return jsonify({'message': 'Bookmark already exists'})
+        if url != old_url:
+            for bookmark in bookmarks_collection.find():
+                if bookmark['url'] == url:
+                    return jsonify({'message': 'Bookmark already exists'})
+        # delete all the tags from the bookmark
+        bookmarks_collection.update_one({'name': name}, {'$unset': {'tags': 1}})
+
+        bookmarks_collection.update_one({'name': name}, {'$set': {'name': name_to_update,'url': url, 'tags': tags}})
+
+    return jsonify({'message': 'Bookmark updated successfully'})
 
 ####################
 
