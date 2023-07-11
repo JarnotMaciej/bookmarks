@@ -53,9 +53,9 @@ def index():
     bookmarks = bookmarks_collection.find().sort('name', 1)
     tags = tags_collection.find()
 
-    modified_bookmarks = assign_tag_colors(bookmarks, tags)
+    modified_bookmarks = assign_tag_colors(bookmarks, tags_collection.find())
 
-    return render_template('index.html', bookmarks=modified_bookmarks, page=current_page)
+    return render_template('index.html', bookmarks=modified_bookmarks, page=current_page, editTags=tags)
 
 @app.route('/tags', methods=['GET', 'POST'])
 def tags():
