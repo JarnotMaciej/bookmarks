@@ -2,6 +2,11 @@
 
 ![GitHub](https://img.shields.io/github/license/JarnotMaciej/bookmarks?style=flat-square) ![GitHub](https://img.shields.io/github/languages/top/JarnotMaciej/bookmarks?style=flat-square) ![GitHub](https://img.shields.io/github/languages/code-size/JarnotMaciej/bookmarks?style=flat-square) 
 
+<p align="center">
+<img width="128" height="128" src="static/images/bookmark.png"/>
+</p>
+
+
 ## Short description
 
 Bookmarks is a self-hosted application developed in Python using Flask framework, MongoDB, and JavaScript. The application provides a convenient solution for managing bookmarks, allowing users to organize and save their bookmarks in a more organized and structured manner than traditional web browsers offer.
@@ -10,8 +15,6 @@ Bookmarks is a self-hosted application developed in Python using Flask framework
 
 ![127 0 0 1_5000](https://github.com/JarnotMaciej/bookmarks/assets/92025751/d1d7cab9-d85b-460e-ba08-2e3948f5b5af)
 ![127 0 0 1_5000_tags](https://github.com/JarnotMaciej/bookmarks/assets/92025751/d5bca379-9be1-4b14-a466-5108d721eb55)
-![127 0 0 1_5000_add-bookmark](https://github.com/JarnotMaciej/bookmarks/assets/92025751/96920b03-db55-4afb-bd01-c5c711965d9b)
-![127 0 0 1_5000_add-bookmark (1)](https://github.com/JarnotMaciej/bookmarks/assets/92025751/710df9bd-4846-431f-a123-85cd3fc56342)
 
 ## Installation
 
