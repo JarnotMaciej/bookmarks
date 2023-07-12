@@ -18,16 +18,13 @@ Bookmarks is a self-hosted application developed in Python using Flask framework
 To run the Bookmarks application, please follow the steps below:
 
 1. Clone the repository to your local machine.
-2. Install the required dependencies by running the following command:
-```bash
-pip install -r requirements.txt
-```
-3. Set up a local MongoDB instance and update the connection details in the `app.py` file.
-4. Run the `app.py` file to start the application:
-```bash
-python app.py
-```
-5. Access the application by opening a web browser and navigating to `http://localhost:5000`.
+2. Set up a virtual environment by running `python3 -m venv env` in the project directory.
+3. Activate the virtual environment by running `source env/bin/activate` (Unix-based systems) or `.\env\Scripts\activate` (Windows).
+4. Install the required dependencies by running `pip install -r requirements.txt`.
+5. Set up a MongoDB database and configure the connection details in `app.py`.
+6. Run the `app.py` file to start the application:
+`python app.py`
+7. Access the application by opening a web browser and navigating to `http://localhost:5000`.
 
 ## How to use it?
 - On the home page, you can view your existing bookmarks along with their details such as the title, URL, and tags.
