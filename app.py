@@ -14,6 +14,9 @@ mongodb_port = os.getenv("MONGODB_PORT")
 database = os.getenv("MONGODB_DB")
 bookmarks_collection = os.getenv("BOOKMARKS_COLLECTION")
 tags_collection = os.getenv("TAGS_COLLECTION")
+app_port = os.getenv("BOOKMARKS_PORT")
+if app_port == None:
+    app_port = 4999
 
 app = Flask(__name__)
 
@@ -254,4 +257,4 @@ def page_not_found(error):
     return render_template('error.html', error_code=404), 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=app_port)
