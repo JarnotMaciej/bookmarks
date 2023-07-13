@@ -6,13 +6,12 @@ Project Description
 
 ### Todo
 
-- [ ] fixing 'current site'  
 - [ ] filters on site -> query builder  
 - [ ] AI implementation for suggesting topics and tags  
+- [ ] fixing 'current site'  
 
 ### In Progress
 
-- [ ] settings page -> import, export <csv, markdown>  
 
 ### Done ✓
 
@@ -20,4 +19,5 @@ Project Description
 - [x] editing, deleting bookmarks  
 - [x] duplicates shouldnt be added in bookmarks  
 - [x] bookmark is visited after clicking at the link  
+- [x] settings page -> import, export <json, markdown>  
 

@@ -1,11 +1,12 @@
-from flask import Flask, render_template, request, jsonify, redirect
+from datetime import datetime
+from flask import Flask, json, render_template, request, jsonify, redirect, Response
 from pymongo import MongoClient
 import utils.validation as validation
 import utils.normalization as normalization
+import utils.migration as migration
 
 app = Flask(__name__)
 
-# Connection to MongoDB
 client = MongoClient('192.168.21.8', 32770)
 db = client['mydb']
 bookmarks_collection = db['bookmarks']
@@ -15,6 +16,24 @@ tags_collection = db['tags']
 current_page = 'home'
 
 ### Functions ###
+def importFromJson(jsonInput):
+    '''Takes a JSON input and imports it into the database.'''
+    # it is already connected to the database
+    if validation.validateImport(jsonInput):
+        # delete all bookmarks
+        bookmarks_collection.delete_many({})
+        # delete all tags
+        tags_collection.delete_many({})
+        # insert all tags
+        for tag in jsonInput['tags']:
+            tags_collection.insert_one(tag)
+        # insert all bookmarks
+        for bookmark in jsonInput['bookmarks']:
+            bookmarks_collection.insert_one(bookmark)
+        return True
+    
+    return False
+
 def insert_tag(name, color):
     '''Inserts a tag into the database'''
     tags_collection.insert_one({'name': name, 'color': color})
@@ -110,8 +129,6 @@ def update_bookmark():
     tags = request.get_json().get('tags')
     old_url = bookmarks_collection.find_one({'name': name})['url']
 
-    print(name, name_to_update, old_url, url, tags)
-
     if validation.validate_bookmark_name(name) and validation.validate_url(url) and validation.validate_tags(tags):
         # check if bookmark already exists
         if name != name_to_update:
@@ -191,10 +208,40 @@ def edit_tag():
 
     return jsonify({'message': 'Tag edited successfully'})
 
+# Return exports
+@app.route('/bookmarks-markdown')
+def bookmarks_markdown():
+    bookmarks = bookmarks_collection.find({}, {"_id": 0, "name": 1, "url": 1}).sort('name', 1)
+    markdownFile = migration.exportToMarkdown(bookmarks)
+    response = Response(markdownFile)
+    # put date and time in the filename
+    response.headers['Content-Disposition'] = 'attachment; filename=bookmarks-' + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + '.md'
+    return response
+
+@app.route('/bookmarks-json-export')
+def bookmarks_json_export():
+    bookmarks = bookmarks_collection.find({}, {"_id": 0, "name": 1, "tags": 1, "url": 1, "visited": 1}).sort('name', 1)
+    tags = tags_collection.find({}, {"_id": 0, "name": 1, "color": 1}).sort('name', 1)
+    jsonFile = migration.exportToJson(bookmarks, tags)
+    response = jsonify(jsonFile)
+    # put date and time in the filename
+    response.headers['Content-Disposition'] = 'attachment; filename=bookmarks-' + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + '.json'
+    return response
+
+@app.route('/bookmarks-json-import', methods=['POST'])
+def bookmarks_json_import():
+    # check if the post request has the file part and if it is blank
+    if 'fileToImport' not in request.files or request.files['fileToImport'].filename == '':
+        return redirect('/settings')
+    jsonFile = request.files['fileToImport']
+    jsonData = json.load(jsonFile)  # Parse JSON data from file object
+    importFromJson(jsonData)
+    return redirect('/')
+
 @app.errorhandler(404)
 def page_not_found(error):
     # Custom error page template
     return render_template('error.html', error_code=404), 404
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

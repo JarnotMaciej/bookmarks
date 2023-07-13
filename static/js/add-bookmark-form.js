@@ -1,21 +1,16 @@
 const submitButton = document.querySelector('button[type="submit"]');
+const bookmarkNameInput = document.querySelector("#bookmarkNameInput");
+const bookmarkUrlInput = document.querySelector("#bookmarkUrl");
 
 submitButton.addEventListener("click", () => {
-    const bookmarkName = document.querySelector("#bookmarkNameInput").value;
-    const bookmarkUrl = document.querySelector("#bookmarkUrl").value;
-    const bookmarkTags = document.querySelectorAll(
-        'input[type="checkbox"]:checked'
-    );
-    const bookmarkTagsArray = [];
-
-    bookmarkTags.forEach((tag) => {
-        bookmarkTagsArray.push(tag.id);
-    });
+    const bookmarkTags = Array.from(
+        document.querySelectorAll('input[type="checkbox"]:checked')
+    ).map((tag) => tag.id);
 
     const data = {
-        name: bookmarkName,
-        url: bookmarkUrl,
-        tags: bookmarkTagsArray,
+        name: bookmarkNameInput.value,
+        url: bookmarkUrlInput.value,
+        tags: bookmarkTags,
     };
 
     fetch("/add-bookmark-execute", {
@@ -25,7 +20,12 @@ submitButton.addEventListener("click", () => {
         },
         body: JSON.stringify(data),
     })
-        .then((response) => response.json())
+        .then((response) => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
         .then((data) => {
             console.log("Success:", data);
             window.location.href = "/add-bookmark";
