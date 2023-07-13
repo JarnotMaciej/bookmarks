@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+import os
 from datetime import datetime
 from flask import Flask, json, render_template, request, jsonify, redirect, Response
 from pymongo import MongoClient
@@ -5,12 +7,20 @@ import utils.validation as validation
 import utils.normalization as normalization
 import utils.migration as migration
 
+load_dotenv()
+# Access the variables
+mongodb_host = os.getenv("MONGODB_HOST")
+mongodb_port = os.getenv("MONGODB_PORT")
+database = os.getenv("MONGODB_DB")
+bookmarks_collection = os.getenv("BOOKMARKS_COLLECTION")
+tags_collection = os.getenv("TAGS_COLLECTION")
+
 app = Flask(__name__)
 
-client = MongoClient('192.168.21.8', 32770)
-db = client['mydb']
-bookmarks_collection = db['bookmarks']
-tags_collection = db['tags']
+client = MongoClient(mongodb_host, int(mongodb_port))
+db = client[database]
+bookmarks_collection = db[bookmarks_collection]
+tags_collection = db[tags_collection]
 
 # Set the current page
 current_page = 'home'
