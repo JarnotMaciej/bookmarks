@@ -72,6 +72,12 @@ def add_bookmark():
 
     return render_template('add-bookmark.html', page=current_page, tags=tags)
 
+@app.route('/settings')
+def settings():
+    current_page = 'settings'
+
+    return render_template('settings.html', page=current_page)
+
 @app.route('/add-bookmark-execute', methods=['POST'])
 def add_bookmark_execute():
     name = request.get_json().get('name')
@@ -122,6 +128,13 @@ def update_bookmark():
         bookmarks_collection.update_one({'name': name}, {'$set': {'name': name_to_update,'url': url, 'tags': tags}})
 
     return jsonify({'message': 'Bookmark updated successfully'})
+
+@app.route('/visit-bookmark', methods=['POST'])
+def visit_bookmark():
+    name = request.get_json().get('name')
+    bookmarks_collection.update_one({'name': name}, {'$set': {'visited': True}})
+
+    return jsonify({'message': 'Bookmark visited successfully'})
 
 ####################
 

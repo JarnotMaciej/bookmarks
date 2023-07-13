@@ -6,20 +6,18 @@ Project Description
 
 ### Todo
 
-- [ ] bookmark is visited after clicking at the link  
 - [ ] fixing 'current site'  
 - [ ] filters on site -> query builder  
-- [ ] settings page -> import, export <csv, markdown>  
+- [ ] AI implementation for suggesting topics and tags  
 
 ### In Progress
 
-- [ ] editing, deleting bookmarks  
-- [ ] duplicates shouldnt be added in bookmarks  
+- [ ] settings page -> import, export <csv, markdown>  
 
 ### Done ✓
 
-- [x] js need to be separated and loaded at the end  
-- [x] editing, deleting tags using bootstrap modal  
-- [x] no tags duplicates on adding and editing  
 - [x] adding bookmarks  
+- [x] editing, deleting bookmarks  
+- [x] duplicates shouldnt be added in bookmarks  
+- [x] bookmark is visited after clicking at the link  
 
