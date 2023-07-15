@@ -1,0 +1,38 @@
+<div class="row justify-content-center">
+    <div class="col-auto">
+        <h3 class="m-4" style="font-weight: normal">Bookmarks
+        </h3>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <ul class="nav nav-pills m-3">
+        <div class="row align-items-start">
+            <div class="col">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                        aria-expanded="false">Choose your tags</a>
+                    <ul class="dropdown-menu">
+                    </ul>
+                </li>
+            </div>
+            <div class="col">
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                        aria-expanded="false">Sort by</a>
+                    <ul class="dropdown-menu">
+                        {% for s in sorting %}
+                        <li><a class="dropdown-item" href="#">{{ s.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </div>
+        </div>
+        <div class="col">
+            <li class="nav-item">
+                <button class="nav-link active" id="applyFilters"
+                    style="max-width: 160px; margin-left: auto; text-align: center;">Apply filters</button>
+            </li>
+        </div>
+    </ul>
+</div>

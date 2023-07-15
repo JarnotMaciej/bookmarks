@@ -6,13 +6,13 @@ Project Description
 
 ### Todo
 
-- [ ] filters on site -> query builder  
 - [ ] AI implementation for suggesting topics and tags  
 - [ ] fixing 'current site'  
-- [ ] allow to use signs like - or _
+- [ ] allow to use signs like - or _  
 
 ### In Progress
 
+- [ ] filters on site -> query builder  
 
 ### Done ✓
 

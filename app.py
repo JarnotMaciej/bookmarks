@@ -25,8 +25,26 @@ db = client[database]
 bookmarks_collection = db[bookmarks_collection]
 tags_collection = db[tags_collection]
 
-# Set the current page
+
 current_page = 'home'
+sorting = [
+    {
+        'name': 'Bookmark name (A-Z)', 
+        'value': 'nameAsc'
+    },
+    {
+        'name': 'Bookmark name (Z-A)',
+        'value': 'nameDesc'
+    },
+    {
+        'name': 'Date added (oldest first)',
+        'value': 'dateAsc'
+    },
+    {
+        'name': 'Date added (newest first)',
+        'value': 'dateDesc'
+    }
+]
 
 ### Functions ###
 def importFromJson(jsonInput):
@@ -86,7 +104,7 @@ def index():
 
     modified_bookmarks = assign_tag_colors(bookmarks, tags_collection.find())
 
-    return render_template('index.html', bookmarks=modified_bookmarks, page=current_page, editTags=tags)
+    return render_template('index.html', bookmarks=modified_bookmarks, page=current_page, editTags=tags, sorting=sorting)
 
 @app.route('/tags', methods=['GET', 'POST'])
 def tags():
