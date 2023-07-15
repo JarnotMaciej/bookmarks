@@ -247,6 +247,9 @@ def bookmarks_json_import():
     if 'fileToImport' not in request.files or request.files['fileToImport'].filename == '':
         return redirect('/settings')
     jsonFile = request.files['fileToImport']
+    # check if the file is a json file
+    if not jsonFile.filename.endswith('.json'):
+        return redirect('/settings')
     jsonData = json.load(jsonFile)  # Parse JSON data from file object
     importFromJson(jsonData)
     return redirect('/')

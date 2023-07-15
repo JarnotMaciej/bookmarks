@@ -9,6 +9,7 @@ Project Description
 - [ ] filters on site -> query builder  
 - [ ] AI implementation for suggesting topics and tags  
 - [ ] fixing 'current site'  
+- [ ] allow to use signs like - or _
 
 ### In Progress
 

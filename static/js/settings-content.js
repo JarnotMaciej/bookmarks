@@ -6,5 +6,5 @@ mdExport.addEventListener('click', function() {
 });
 
 jsonExport.addEventListener('click', function() {
-    window.location.href = '/bookmarks-json';
+    window.location.href = '/bookmarks-json-export';
 });
