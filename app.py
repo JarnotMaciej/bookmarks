@@ -1,13 +1,16 @@
 from dotenv import load_dotenv
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from flask import Flask, json, render_template, request, jsonify, redirect, Response
 from pymongo import MongoClient
+import pytz
+from bson.codec_options import CodecOptions
 import utils.validation as validation
 import utils.normalization as normalization
 import utils.migration as migration
 
 load_dotenv()
+
 # Access the variables
 mongodb_host = os.getenv("MONGODB_HOST")
 mongodb_port = os.getenv("MONGODB_PORT")
@@ -17,71 +20,61 @@ tags_collection = os.getenv("TAGS_COLLECTION")
 app_port = os.getenv("BOOKMARKS_PORT")
 if app_port == None:
     app_port = 4999
+env_timezone = os.getenv("TZ")
+if env_timezone == None:
+    env_timezone = 'UTC'
 
 app = Flask(__name__)
 
+my_timezone = pytz.timezone(env_timezone)
 client = MongoClient(mongodb_host, int(mongodb_port))
 db = client[database]
-bookmarks_collection = db[bookmarks_collection]
+bookmarks_collection = db[bookmarks_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone))
 tags_collection = db[tags_collection]
-
 
 current_page = 'home'
 sorting = [
-    {
-        'name': 'Bookmark name (A-Z)', 
-        'value': 'nameAsc'
-    },
-    {
-        'name': 'Bookmark name (Z-A)',
-        'value': 'nameDesc'
-    },
-    {
-        'name': 'Date added (oldest first)',
-        'value': 'dateAsc'
-    },
-    {
-        'name': 'Date added (newest first)',
-        'value': 'dateDesc'
-    }
+    {'name': 'Bookmark name (A-Z)', 'value': 'nameAsc'},
+    {'name': 'Bookmark name (Z-A)', 'value': 'nameDesc'},
+    {'name': 'Date added (oldest first)', 'value': 'dateAsc'},
+    {'name': 'Date added (newest first)', 'value': 'dateDesc'}
 ]
 
 ### Functions ###
 def importFromJson(jsonInput):
-    '''Takes a JSON input and imports it into the database.'''
-    # it is already connected to the database
+    """Takes a JSON input and imports it into the database."""
     if validation.validateImport(jsonInput):
-        # delete all bookmarks
         bookmarks_collection.delete_many({})
-        # delete all tags
         tags_collection.delete_many({})
-        # insert all tags
         for tag in jsonInput['tags']:
             tags_collection.insert_one(tag)
-        # insert all bookmarks
         for bookmark in jsonInput['bookmarks']:
             bookmarks_collection.insert_one(bookmark)
         return True
-    
     return False
 
 def insert_tag(name, color):
-    '''Inserts a tag into the database'''
+    """Inserts a tag into the database"""
     tags_collection.insert_one({'name': name, 'color': color})
 
 def insert_bookmark(name, url, tags):
-    '''Inserts a bookmark into the database'''
-    bookmarks_collection.insert_one({'name': name, 'url': url, 'tags': tags, 'visited': False})
+    """Inserts a bookmark into the database"""
+    bookmarks_collection.insert_one({
+        'name': name,
+        'url': url,
+        'tags': tags,
+        'visited': False,
+        'date': datetime.now(tz=my_timezone)
+    })
 
-def assign_tag_colors(bookmarks_collection, tags_collection):
-    '''Assigns a color to each tag'''
-    # Fuck CSS
+def assign_tag_colors_and_transform_dates(bookmarks, tags):
+    """Assigns a color to each tag and transforms the dates to a more readable format."""
     tag_colors = {}
-    for tag in tags_collection:
+    for tag in tags:
         tag_colors[tag['name']] = tag['color']
 
     modified_bookmarks = []
-    for bookmark in bookmarks_collection:
+    for bookmark in bookmarks:
         modified_tags = []
         for tag in bookmark['tags']:
             modified_tag = {
@@ -98,12 +91,9 @@ def assign_tag_colors(bookmarks_collection, tags_collection):
 @app.route('/')
 def index():
     current_page = 'home'
-    # Fetch data from MongoDB
     bookmarks = bookmarks_collection.find().sort('name', 1)
     tags = tags_collection.find().sort('name', 1)
-
-    modified_bookmarks = assign_tag_colors(bookmarks, tags_collection.find())
-
+    modified_bookmarks = assign_tag_colors_and_transform_dates(bookmarks, tags_collection.find())
     return render_template('index.html', bookmarks=modified_bookmarks, page=current_page, editTags=tags, sorting=sorting)
 
 @app.route('/tags', methods=['GET', 'POST'])
@@ -251,12 +241,24 @@ def bookmarks_markdown():
 
 @app.route('/bookmarks-json-export')
 def bookmarks_json_export():
-    bookmarks = bookmarks_collection.find({}, {"_id": 0, "name": 1, "tags": 1, "url": 1, "visited": 1}).sort('name', 1)
+    bookmarks = bookmarks_collection.find({}, {"_id": 0, "name": 1, "tags": 1, "url": 1, "visited": 1, "date": 1}).sort('name', 1)
     tags = tags_collection.find({}, {"_id": 0, "name": 1, "color": 1}).sort('name', 1)
-    jsonFile = migration.exportToJson(bookmarks, tags)
-    response = jsonify(jsonFile)
-    # put date and time in the filename
+    
+    # Convert bookmarks to a list of dictionaries
+    bookmarks_list = list(bookmarks)
+
+    # Assign current date to bookmarks without a date
+    for bookmark in bookmarks_list:
+        if 'date' not in bookmark:
+            bookmark['date'] = datetime.utcnow()
+
+    # Export JSON data
+    json_file = migration.exportToJson(bookmarks_list, tags)  # Pass the 'tags' argument here
+
+    response = jsonify(json_file)
+    # Put date and time in the filename
     response.headers['Content-Disposition'] = 'attachment; filename=bookmarks-' + datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + '.json'
+    
     return response
 
 @app.route('/bookmarks-json-import', methods=['POST'])

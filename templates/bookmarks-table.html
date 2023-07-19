@@ -5,6 +5,7 @@
             <th scope="col">Website</th>
             <th scope="col">Tags</th>
             <th scope="col">Visited</th>
+            <th scope="col">Added</th>
             <th scope="col">Edit</th>
         </tr>
     </thead>
@@ -26,6 +27,9 @@
                 {% else %}
                 <span class="badge text-bg-danger" style="font-weight: normal;">No</span>
                 {% endif %}
+            </td>
+            <td>
+                {{ document.date }}
             </td>
             <td>
                 <a href="#" class="editButton">
