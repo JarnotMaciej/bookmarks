@@ -108,4 +108,47 @@
     </div>
 </div>
 
+<script>
+    // take <div class="form-check form-switch"> from modal and put it into array
+    const tagsToCopy = document.querySelectorAll('.form-check.form-switch');
+    // put innerHTML of tagsToCopy into array
+    const tagsArray = [];
+    tagsToCopy.forEach(tag => {
+        tagsArray.push(tag.innerHTML);
+    });
+    console.log(tagsArray);
+
+    // put tagsToCopy.innerHTML into copyHere class 
+    // change format from this:
+    /*
+                <input class="form-check-input" type="checkbox" role="switch" id="Coding">
+                <label class="form-check-label" for="Coding">
+                    <span class="badge rounded-pill editTagBadge" style="background-color: #416dd2; font-weight: normal;">Coding</span>
+                </label>
+    */
+    // to this:
+    /*
+                <li><a class="dropdown-item" href="#">
+                    <input class="form-check-input" type="checkbox" role="switch" id="CodingCopy">
+                <label class="form-check-label" for="CodingCopy">
+                    <span class="badge rounded-pill editTagBadge" style="background-color: #416dd2; font-weight: normal;">Coding</span>
+                </label>
+                </a></li>
+    */
+    const copyHere = document.querySelector('.copyHere');
+    tagsArray.forEach(tag => {
+        const li = document.createElement('li');
+        // tag id need to be changed because of duplication (add Copy at the end)
+        tag = tag.replace(/id=".*?"/, 'id="$&Copy"');
+        // for in label tag, change for attribute to match new id
+        tag = tag.replace(/for=".*?"/, 'for="$&Copy"');
+        // add m2 class to input tag
+        tag = tag.replace(/class=".*?"/, 'class="$& m-2"');
+
+        li.innerHTML = tag;
+        copyHere.appendChild(li);
+    });
+    
+</script>
+
 <script src="/static/js/bookmarks-table.js"></script>
