@@ -19,10 +19,10 @@
 
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
-                        aria-expanded="false">Sort by</a>
+                        aria-expanded="false" id="sortBy">Sort by</a>
                     <ul class="dropdown-menu">
                         {% for s in sorting %}
-                        <li><a class="dropdown-item" href="#">{{ s.name }}</a></li>
+                        <li><a class="dropdown-item filteringSorting" href="#">{{ s.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </li>
