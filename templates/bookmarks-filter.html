@@ -22,7 +22,7 @@
                         aria-expanded="false" id="sortBy">Sort by</a>
                     <ul class="dropdown-menu">
                         {% for s in sorting %}
-                        <li><a class="dropdown-item filteringSorting" href="#">{{ s.name }}</a></li>
+                        <li><a class="dropdown-item filteringSorting" href="#" id="{{ s.value }}">{{ s.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </li>

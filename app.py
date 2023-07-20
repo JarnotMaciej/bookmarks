@@ -100,15 +100,43 @@ def assign_tag_colors_and_transform_dates(bookmarks, tags):
     return modified_bookmarks
 
 ### Routes ###
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def index():
     current_page = 'home'
+    if request.method == 'POST':
+        data = request.get_json()
+        activeSorting = data.get('activeSorting')
+        tagsToFilter = data.get('activeTags')
+        print(activeSorting)
+        print(tagsToFilter)
+        # Query builder
+        query = {}
+        if tagsToFilter:
+            query['tags'] = {'$all': tagsToFilter}
+        if activeSorting == 'nameAsc':
+            bookmarks = bookmarks_collection.find(query).sort('name', 1)
+        elif activeSorting == 'nameDesc':
+            bookmarks = bookmarks_collection.find(query).sort('name', -1)
+        elif activeSorting == 'dateAsc':
+            bookmarks = bookmarks_collection.find(query).sort('date', 1)
+        elif activeSorting == 'dateDesc':
+            bookmarks = bookmarks_collection.find(query).sort('date', -1)
+        else:
+            bookmarks = bookmarks_collection.find()  # Default sorting (if no activeSorting provided)
+        modified_bookmarks = assign_tag_colors_and_transform_dates(bookmarks, tags_collection.find())
+
+        for bookmark in modified_bookmarks:
+            bookmark['_id'] = str(bookmark['_id'])
+
+        return jsonify(modified_bookmarks)
+    
+    # This is the GET request handling
     bookmarks = bookmarks_collection.find().sort('name', 1)
     tags = tags_collection.find().sort('name', 1)
     modified_bookmarks = assign_tag_colors_and_transform_dates(bookmarks, tags_collection.find())
     return render_template('index.html', bookmarks=modified_bookmarks, page=current_page, editTags=tags, sorting=sorting)
 
-@app.route('/tags', methods=['GET', 'POST'])
+@app.route('/tags')
 def tags():
     current_page = 'tags'
 
