@@ -12,14 +12,11 @@ Project Description
 
 ### In Progress
 
-- [ ] date  
 - [ ] filters on site -> query builder  
 
 ### Done ✓
 
-- [x] adding bookmarks  
-- [x] editing, deleting bookmarks  
-- [x] duplicates shouldnt be added in bookmarks  
 - [x] bookmark is visited after clicking at the link  
-- [x] settings page -> import, export <json, markdown>  
+- [x] date  
+- [x] changing shitty format to DatetimeMS  
 

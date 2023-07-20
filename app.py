@@ -4,7 +4,8 @@ from datetime import datetime, timezone
 from flask import Flask, json, render_template, request, jsonify, redirect, Response
 from pymongo import MongoClient
 import pytz
-from bson.codec_options import CodecOptions
+from bson.datetime_ms import DatetimeMS
+from bson.codec_options import CodecOptions, DatetimeConversion
 import utils.validation as validation
 import utils.normalization as normalization
 import utils.migration as migration
@@ -29,7 +30,7 @@ app = Flask(__name__)
 my_timezone = pytz.timezone(env_timezone)
 client = MongoClient(mongodb_host, int(mongodb_port))
 db = client[database]
-bookmarks_collection = db[bookmarks_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone))
+bookmarks_collection = db[bookmarks_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
 tags_collection = db[tags_collection]
 
 current_page = 'home'
@@ -49,6 +50,7 @@ def importFromJson(jsonInput):
         for tag in jsonInput['tags']:
             tags_collection.insert_one(tag)
         for bookmark in jsonInput['bookmarks']:
+            bookmark['date'] = datetime.fromtimestamp(bookmark['date'] / 1000.0)
             bookmarks_collection.insert_one(bookmark)
         return True
     return False
@@ -76,6 +78,16 @@ def assign_tag_colors_and_transform_dates(bookmarks, tags):
     modified_bookmarks = []
     for bookmark in bookmarks:
         modified_tags = []
+
+        if 'date' in bookmark:
+            date = bookmark['date']
+            # Convert DatetimeMS to Python datetime object
+            datetime_obj = date.as_datetime()
+
+            # Convert the datetime object to the desired format
+            formatted_date = datetime_obj.strftime("%d.%m.%Y")
+            bookmark['date'] = formatted_date
+
         for tag in bookmark['tags']:
             modified_tag = {
                 'name': tag,
@@ -249,8 +261,12 @@ def bookmarks_json_export():
 
     # Assign current date to bookmarks without a date
     for bookmark in bookmarks_list:
-        if 'date' not in bookmark:
-            bookmark['date'] = datetime.utcnow()
+        if 'date' in bookmark:
+            date = int(bookmark['date'])
+            bookmark['date'] = date
+        else:
+            date = int(datetime.now(tz=my_timezone).timestamp() * 1000)
+            bookmark['date'] = date
 
     # Export JSON data
     json_file = migration.exportToJson(bookmarks_list, tags)  # Pass the 'tags' argument here
