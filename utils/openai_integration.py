@@ -29,9 +29,6 @@ tags = db[tags_collection]
 my_timezone = pytz.timezone(env_timezone)
 topics = db[topics_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
 
-# prompt for generating new topics
-topic_prompt = "Based on the bookmarks provided below, suggest me 12 different, NEW topics (in ordered list) which might be interesting for me:\n\n"
-
 def get_16_latest():
     ''' Get 16 latest bookmark names'''
     latest = bookmarks.find({}, {"_id": 0, "name": 1}).sort("date", -1).limit(16)
@@ -43,25 +40,23 @@ def get_16_random():
     return [bookmark["name"] for bookmark in random]
 
 def generate_text(prompt):
-    response = openai.Completion.create(
-        engine="text-davinci-003",  # The engine name for the davinci model
-        prompt=prompt,
+    messages = [
+        {
+            "role": "system",
+            "content": "You’re a kind helpful assistant. Based on the bookmarks provided below, suggest me 12 different, NEW topics (in ordered list) which might be interesting for me.\n\n"
+        }    
+    ]
+    messages.append({"role": "user", "content": prompt})
+    completion = openai.ChatCompletion.create(
+        engine="gpt-3.5-turbo",
+        messages=messages,
         temperature=0.85,
         max_tokens=256,
         top_p=1,
         frequency_penalty=0.3,
         presence_penalty=0.7,
-        n=1,
-        stop=None,
     )
-    return response.choices[0].text.strip()
-
-def prompt_creator(bookmarks):
-    ''' Create prompt based on bookmarks'''
-    prompt = topic_prompt
-    for bookmark in bookmarks:
-        prompt += bookmark + "\n"
-    return prompt
+    return completion
 
 def get_topics(method):
     ''' Get topics from OpenAI API, based on method'''
@@ -70,8 +65,8 @@ def get_topics(method):
         bookmarks = get_16_latest()
     elif method == "random":
         bookmarks = get_16_random()
-    prompt = prompt_creator(bookmarks)
-    topics = generate_text(prompt)
+    bookmarksStringWithNewLines = "\n".join(bookmarks)
+    topics = generate_text(bookmarks)
     topics = topics.split("\n") # split by new line
     topics = [topic for topic in topics if topic != ""] # remove empty strings
     # delete numbers at the beginning of the string using regex
@@ -88,4 +83,13 @@ def put_topics():
     
     print("Topics inserted!")
 
-put_topics()
+# put_topics()
+
+latest = get_16_latest()
+bookmarksStringWithNewLines = "\n".join(latest)
+print(bookmarksStringWithNewLines)
+print('-'*50)
+genText = generate_text(latest)
+print(genText)
+print('-'*50)
+
