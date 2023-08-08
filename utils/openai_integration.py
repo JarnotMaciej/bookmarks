@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from bson.codec_options import CodecOptions, DatetimeConversion
 from dotenv import load_dotenv
 import os
@@ -39,24 +41,67 @@ def get_16_random():
     random = bookmarks.aggregate([{"$sample": {"size": 16}}])
     return [bookmark["name"] for bookmark in random]
 
-def generate_text(prompt):
+def who_bookmarked(bookmarks):
+    ''' Define who bookmarked stuff'''
     messages = [
-        {
-            "role": "system",
-            "content": "You’re a kind helpful assistant. Based on the bookmarks provided below, suggest me 12 different, NEW topics (in ordered list) which might be interesting for me.\n\n"
-        }    
+        {"role": "system", "content": "You are a helpful assistant."}
     ]
-    messages.append({"role": "user", "content": prompt})
-    completion = openai.ChatCompletion.create(
-        engine="gpt-3.5-turbo",
+    default_prompt = 'Based on the bookmarks provided below, please define and the person. Examples of some definitions of the person: "passionate researcher", "tech enthusiast". The definition should be very short (5 words at most). Bookmarks:\n\n'
+
+    bookmarks_str = ""
+    for bookmark in bookmarks:
+        bookmarks_str += bookmark.encode("utf-8").decode("utf-8")
+        bookmarks_str += "\n"
+    default_prompt += bookmarks_str + "\n"
+    default_prompt += "You should answer only with definition of the user.\n"
+    
+    messages.append({"role": "user", "content": default_prompt})
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
         messages=messages,
-        temperature=0.85,
-        max_tokens=256,
-        top_p=1,
+        temperature=1.2,
+        max_tokens=20,
+        top_p=0.5,
         frequency_penalty=0.3,
-        presence_penalty=0.7,
+        presence_penalty=0.3,
     )
-    return completion
+
+    return response.choices[0].message.content
+
+def generate_topics(prompt, user_definition):
+    ''' Generate topics based on prompt'''
+    messages = []
+    if user_definition != "":
+        system_role_string = "You are a helpful assistant. Imagine you are assisting " + user_definition
+        messages.append({"role": "system", "content": system_role_string})
+    else:
+        messages.append({"role": "system", "content": "You are a helpful assistant."})
+        
+
+    messages.append({"role": "user", "content": prompt})
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0.8,
+        max_tokens=256,
+        frequency_penalty=0.3,
+        presence_penalty=0.9,
+    )
+    return response.choices[0].message.content
+
+def prompt_creator(bookmarks):
+    default_prompt = "Based on the bookmark names provided below, I want you to assume that the person who bookmarked these is an avid learner with diverse interests. Please suggest 12 different, NEW topics and subjects that align with their curiosity and passion for learning. Think outside the box and provide unique ideas based on the bookmark names. Here are the bookmarks:\n\n"
+
+    bookmarks_str = ""
+
+    for bookmark in bookmarks:
+        bookmarks_str += bookmark.encode("utf-8").decode("utf-8")
+        bookmarks_str += "\n"
+
+    default_prompt += bookmarks_str + "\n"
+    default_prompt += "Remember not to be generic, you need to think out of the box and provide NEW and FRESH topics. Provide ONLY the topics in ordered list. All of the topics should be short and concise (one topic should have at most 5 words.\n"
+
+    return default_prompt
 
 def get_topics(method):
     ''' Get topics from OpenAI API, based on method'''
@@ -66,7 +111,10 @@ def get_topics(method):
     elif method == "random":
         bookmarks = get_16_random()
     bookmarksStringWithNewLines = "\n".join(bookmarks)
-    topics = generate_text(bookmarks)
+    user_definition = who_bookmarked(bookmarks)
+    prompt = prompt_creator(bookmarks)
+    generated_topics = generate_topics(prompt, user_definition)
+    topics = generated_topics.replace(bookmarksStringWithNewLines, "")
     topics = topics.split("\n") # split by new line
     topics = [topic for topic in topics if topic != ""] # remove empty strings
     # delete numbers at the beginning of the string using regex
@@ -83,13 +131,12 @@ def put_topics():
     
     print("Topics inserted!")
 
-# put_topics()
+# testin
+# random_bm = get_16_random()
+# my_prompt = prompt_creator(random_bm)
+# # print(my_prompt)
+# generated_topics = generate_topics(my_prompt)
+# print(generated_topics)
 
-latest = get_16_latest()
-bookmarksStringWithNewLines = "\n".join(latest)
-print(bookmarksStringWithNewLines)
-print('-'*50)
-genText = generate_text(latest)
-print(genText)
-print('-'*50)
-
+asjfns = get_topics(topics_method)
+print(asjfns)
