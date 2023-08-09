@@ -41,6 +41,14 @@ def get_16_random():
     random = bookmarks.aggregate([{"$sample": {"size": 16}}])
     return [bookmark["name"] for bookmark in random]
 
+def get_bookmarks():
+    bookmarks = []
+    if topics_method == "latest":
+        bookmarks = get_16_latest()
+    elif topics_method == "random":
+        bookmarks = get_16_random()
+    return bookmarks
+
 def who_bookmarked(bookmarks):
     ''' Define who bookmarked stuff'''
     messages = [
@@ -87,7 +95,7 @@ def generate_topics(prompt, user_definition):
         frequency_penalty=0.3,
         presence_penalty=0.9,
     )
-    return response.choices[0].message.content
+    return transform_topics(response.choices[0].message.content)
 
 def prompt_creator(bookmarks):
     default_prompt = "Based on the bookmark names provided below, I want you to assume that the person who bookmarked these is an avid learner with diverse interests. Please suggest 12 different, NEW topics and subjects that align with their curiosity and passion for learning. Think outside the box and provide unique ideas based on the bookmark names. Here are the bookmarks:\n\n"
@@ -103,40 +111,53 @@ def prompt_creator(bookmarks):
 
     return default_prompt
 
-def get_topics(method):
-    ''' Get topics from OpenAI API, based on method'''
-    bookmarks = []
-    if method == "latest":
-        bookmarks = get_16_latest()
-    elif method == "random":
-        bookmarks = get_16_random()
-    bookmarksStringWithNewLines = "\n".join(bookmarks)
-    user_definition = who_bookmarked(bookmarks)
-    prompt = prompt_creator(bookmarks)
-    generated_topics = generate_topics(prompt, user_definition)
-    topics = generated_topics.replace(bookmarksStringWithNewLines, "")
-    topics = topics.split("\n") # split by new line
+def transform_topics(generated_topics):
+    ''' Transform topics to list'''
+    topics = generated_topics.split("\n") # split by new line
     topics = [topic for topic in topics if topic != ""] # remove empty strings
     # delete numbers at the beginning of the string using regex
     topics = [re.sub(r"^\d+\.\s", "", topic) for topic in topics]
     return topics
 
-def put_topics():
-    ''' Put topics to MongoDB'''
-    my_topics = get_topics(topics_method)
-    # put topic names with date to MongoDB
-    # topicsToPut = [{"name": topic, "date": datetime.now(tz=my_timezone)} for topic in topics]
-    for t in my_topics:
-        topics.insert_one({"name": t, "date": datetime.now(tz=my_timezone)})
-    
+def get_topic_description(topic):
+    ''' Get topic description from Wikipedia'''
+    messages = []
+    messages.append({"role": "system", "content": "You are a helpful assistant."})
+    messages.append({"role": "user", "content": "Create a short description (3-4 sentences) about this topic: " + topic + "\n\nYou should answer only with description of the topic.\n"})
+
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages,
+        temperature=0.8,
+        max_tokens=200,
+        frequency_penalty=0.3,
+        presence_penalty=0.3,
+    )
+    return {"topic": topic, "description": response.choices[0].message.content}
+
+def assigning_descriptions(topics):
+    ''' Assign descriptions to topics'''
+    topics_with_descriptions = []
+    for topic in topics:
+        topics_with_descriptions.append(get_topic_description(topic))
+    return topics_with_descriptions
+
+def main():
+    ''' Main function'''
+    bookmarks = get_bookmarks() ###
+    # print(bookmarks)
+    user_definition = who_bookmarked(bookmarks) ###
+    # print(user_definition)
+    gen_topics = generate_topics(prompt_creator(bookmarks), user_definition) ###
+    # print(gen_topics)
+    topics_with_descriptions = assigning_descriptions(gen_topics) ###
+    # print(topics_with_descriptions)
+    # json part
+    topics_json = {"date": datetime.now(tz=my_timezone), "chosen-bookmarks": bookmarks, "user-definition": user_definition, "topics": topics_with_descriptions}
+    # print(topics_json)
+    # put to MongoDB
+    topics.insert_one(topics_json)
     print("Topics inserted!")
 
-# testin
-# random_bm = get_16_random()
-# my_prompt = prompt_creator(random_bm)
-# # print(my_prompt)
-# generated_topics = generate_topics(my_prompt)
-# print(generated_topics)
-
-asjfns = get_topics(topics_method)
-print(asjfns)
+if __name__ == "__main__":
+    main()
