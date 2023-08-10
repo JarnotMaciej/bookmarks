@@ -3,3 +3,4 @@ flask==2.3.2
 pymongo==4.4.0
 pytz==2023.3
 openai==0.27.8
+flask-bootstrap==3.3.7.1

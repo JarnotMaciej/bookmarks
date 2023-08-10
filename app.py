@@ -6,6 +6,8 @@ from pymongo import MongoClient
 import pytz
 from bson.datetime_ms import DatetimeMS
 from bson.codec_options import CodecOptions, DatetimeConversion
+# from flask_bootstrap import Bootstrap
+
 import utils.validation as validation
 import utils.normalization as normalization
 import utils.migration as migration
@@ -18,7 +20,8 @@ mongodb_port = os.getenv("MONGODB_PORT")
 database = os.getenv("MONGODB_DB")
 bookmarks_collection = os.getenv("BOOKMARKS_COLLECTION")
 tags_collection = os.getenv("TAGS_COLLECTION")
-app_port = os.getenv("BOOKMARKS_PORT")
+topics_collection = os.getenv("TOPICS_COLLECTION")
+app_port = os.getenv("APP_PORT")
 if app_port == None:
     app_port = 4999
 env_timezone = os.getenv("TZ")
@@ -32,6 +35,7 @@ client = MongoClient(mongodb_host, int(mongodb_port))
 db = client[database]
 bookmarks_collection = db[bookmarks_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
 tags_collection = db[tags_collection]
+topics_collection = db[topics_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
 
 current_page = 'home'
 sorting = [
@@ -157,6 +161,19 @@ def settings():
     current_page = 'settings'
 
     return render_template('settings.html', page=current_page)
+
+@app.route('/suggestions')
+def suggestions():
+    current_page = 'suggestions'
+
+    # Fetch data from MongoDB topics collection
+    generated_suggestions = topics_collection.find().sort('date', 1).limit(1)
+    # get topics array from the document
+    generated_suggestions = generated_suggestions[0]['topics']
+
+    return render_template('suggestions.html', page=current_page, suggestions=generated_suggestions)
+
+##################
 
 @app.route('/add-bookmark-execute', methods=['POST'])
 def add_bookmark_execute():
@@ -324,4 +341,5 @@ def page_not_found(error):
     return render_template('error.html', error_code=404), 404
 
 if __name__ == '__main__':
+    # Bootstrap(app)
     app.run(host='0.0.0.0', port=app_port)

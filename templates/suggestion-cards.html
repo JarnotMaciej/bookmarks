@@ -1,0 +1,16 @@
+<div class="row">
+{% for s in suggestions %}
+<div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+<div class="card">
+    <div class="card-header">
+        {{ s.topic }}
+    </div>
+    <div class="card-body">
+        <h5 class="card-title">{{ s.topic }}</h5>
+        <p class="card-text">{{ s.description }}</p>
+        <a href="#" class="btn btn-primary">Find out more!</a>
+    </div>
+</div>
+</div>
+{% endfor %}
+</div>
