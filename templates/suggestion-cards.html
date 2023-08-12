@@ -1,29 +1,41 @@
 <div class="row mb-3">
     <nav class="navbar bg-body-tertiary mb-3">
         <div class="container-fluid">
-          <span class="navbar-brand mb-0">You was defined as: {{ user_definition }}</span>
+          <span class="navbar-brand mb-0">Suggestions</span>
+          <span class="navbar-brand mb-0">Generated: {{ generation_date }}</span>
         </div>
       </nav>
 </div>
 <div class="row mb-3">
-    <div class="accordion accordion-flush" id="accordionFlushExample">
-        <div class="accordion-item">
-          <h2 class="accordion-header">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-              Based on these bookmarks we suggest you topics below:
-            </button>
-          </h2>
-          <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
-            <div class="accordion-body">
-                <ul class="list-group list-group-flush">
-                {% for cb in chosen_bookmarks %}
-                    <li class="list-group-item">{{ cb }}</li>
-                {% endfor %}
-                </ul>
-            </div>
-          </div>
+  <div class="accordion accordion-flush" id="accordionFlushExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+          Used bookmarks
+        </button>
+      </h2>
+      <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+          <ul class="list-group list-group-flush">
+          {% for cb in chosen_bookmarks %}
+              <li class="list-group-item">{{ cb }}</li>
+          {% endfor %}
         </div>
       </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+          User definition
+        </button>
+      </h2>
+      <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+          You was defined as: <i>{{ user_definition }}</i>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 <div class="row">
 {% for s in suggestions %}
@@ -40,11 +52,4 @@
 </div>
 </div>
 {% endfor %}
-</div>
-<div class="row mb-3">
-    <nav class="navbar bg-body-tertiary mb-3">
-        <div class="container-fluid">
-          <span class="navbar-brand mb-0">Generated: {{ generation_date }}</span>
-        </div>
-      </nav>
 </div>

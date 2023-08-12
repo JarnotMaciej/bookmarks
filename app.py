@@ -167,14 +167,14 @@ def suggestions():
     current_page = 'suggestions'
 
     # Fetch data from MongoDB topics collection
-    generated_suggestions = topics_collection.find().sort('date', 1).limit(1)
+    generated_suggestions = topics_collection.find().sort('date', -1).limit(1)
     # get topics array from the document
     topic_suggestions = generated_suggestions[0]['topics']
     chosen_bookmarks = generated_suggestions[0]['chosen-bookmarks']
-    user_definition = generated_suggestions[0]['user-definition']
+    user_definition = generated_suggestions[0]['user-definition'].title()
     generation_date = generated_suggestions[0]['date']
-    # change DatetimeMS(1691573948364) into a readable format
-    generation_date = generation_date.as_datetime()
+    # change DatetimeMS(1691573948364) into format DD.MM.YYYY
+    generation_date = generation_date.as_datetime().strftime("%d.%m.%Y")
 
     return render_template('suggestions.html', page=current_page, suggestions=topic_suggestions, chosen_bookmarks=chosen_bookmarks, user_definition=user_definition, generation_date=generation_date)
 
