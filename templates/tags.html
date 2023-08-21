@@ -1,4 +1,104 @@
-{% include 'base.html' %}
-{% include 'add-new-tag.html' %}
-{% include 'tags-container.html' %}
-{% include 'footer.html' %}
+{% extends 'base.html' %}
+{% block navbar %}{{ macros.main_nav('tags')}}{% endblock %}
+{% block title %}Bookmarks | Tags{% endblock %}
+{% block content %}
+{{ macros.nav_macro('Choose the name and color of new tag') }}
+<div class="container text-center">
+    <div class="row align-items-center">
+        <div class="col">
+        </div>
+        <div class="col-12 col-md-9">
+            <form class="align-items-center" method="POST" action="/add-tag">
+                <div class="row justify-content-center">
+                    <div class="col-auto">
+                    </div>
+                </div>
+                <div class="row g-3 justify-content-center">
+                    <div class="col-auto">
+                        <input type="text" class="form-control form-control-lg" id="tagName" name="tagName"
+                            placeholder="Tag name">
+                    </div>
+                    <div class="col-auto">
+                        <input type="color" class="form-control form-control-color form-control-lg" id="tagColor"
+                            name="tagColor" value="#9e2a2a">
+                    </div>
+                </div>
+
+                <div class="row g-3 m-4">
+                    <button type="submit" id="addTagBtn" class="btn btn-primary"
+                        style="max-width: 324px; margin: auto;">Add tag</button>
+                </div>
+            </form>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</div>
+
+{{ macros.nav_macro('List of your tags') }}
+<div class="container text-center">
+    <div class="row align-items-start">
+        <div class="col">
+        </div>
+        <div class="col-12 col-md-9">
+            {% for tag in tags %}
+            <span class="badge rounded-pill m-2"
+                style="background-color: #{{ tag.color }}; font-size: calc(1.275rem + .3vw); font-weight: normal;"
+                data-bs-toggle="modal" data-bs-target="#editTags">{{ tag.name }}</span>
+            {% endfor %}
+            <h6 class="m-3" style="font-weight: normal;">You can edit or remove the tag by clicking on it.</h6>
+        </div>
+        <div class="col">
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="editTags" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel" style="font-weight: normal;">Edit the tag <i><span
+                            id="tagNameTitle"></span></i>
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body justify-content-center" id="modal-to-edit">
+                <form class="align-items-center" method="POST">
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-auto">
+                            <label for="tagName" class="form-label">
+                                <h5 style="font-weight: normal;">Change name and color of the tag</h5>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-auto">
+                            <input type="text" class="form-control form-control-lg" id="editTagName" name="editTagName"
+                                placeholder="Tag name">
+                        </div>
+
+                        <div class="col-auto">
+                            <input type="color" class="form-control form-control-color form-control-lg"
+                                id="editTagColor" name="editTagColor" value="#9e2a2a">
+                        </div>
+                    </div>
+                    <div class="row g-3 m-2 justify-content-center">
+                        <div class="col-auto">
+                            <h6 style="font-weight: normal;">Tag name cannot be a duplicate.</h6>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger">Delete Tag</button>
+                <button type="button" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/tags.js"></script>
+{% endblock %}

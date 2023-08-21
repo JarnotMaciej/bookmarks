@@ -1,4 +1,150 @@
-{% include 'base.html' %}
-{% include 'bookmarks-filter.html' %}
-{% include 'bookmarks-table.html' %}
-{% include 'footer.html' %}
+{% extends 'base.html' %}
+{% block navbar %}{{ macros.main_nav('home')}}{% endblock %}
+{% block content %}
+{{ macros.nav_macro('Bookmarks') }}
+<div class="row justify-content-center">
+    <ul class="nav nav-pills m-3">
+        <div class="row align-items-start">
+            <div class="col">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                        aria-expanded="false">Choose your tags</a>
+                    <ul class="dropdown-menu copyHere">
+                    </ul>
+                </li>
+            </div>
+            <div class="col">
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button"
+                        aria-expanded="false" id="sortBy">Sort by</a>
+                    <ul class="dropdown-menu">
+                        {% for s in sorting %}
+                        <li><a class="dropdown-item filteringSorting" href="#" id="{{ s.value }}">{{ s.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            </div>
+        </div>
+        <div class="col">
+            <li class="nav-item">
+                <button class="nav-link active" id="applyFilters"
+                    style="max-width: 160px; margin-left: auto; text-align: center;">Apply filters</button>
+            </li>
+        </div>
+    </ul>
+</div>
+
+<table class="table table-hover">
+    <caption>All your bookmarks are here!</caption>
+    <thead>
+        <tr>
+            <th scope="col">Website</th>
+            <th scope="col">Tags</th>
+            <th scope="col">Visited</th>
+            <th scope="col">Added</th>
+            <th scope="col">Edit</th>
+        </tr>
+    </thead>
+    <tbody class="table-group-divider">
+        {% for document in bookmarks %}
+        <tr>
+            <td><a href="https://{{ document.url }}" class="text-primary-emphasis bookmarkLink" target="_blank">{{
+                    document.name
+                    }}</a></td>
+            <td>
+                {% for tag in document.tags %}
+                <span class="badge rounded-pill" style="background-color: #{{ tag.color }}; font-weight: normal;">{{
+                    tag.name }}</span>
+                {% endfor %}
+            </td>
+            <td>
+                {% if document.visited %}
+                <span class="badge text-bg-success" style="font-weight: normal;">Yes</span>
+                {% else %}
+                <span class="badge text-bg-danger" style="font-weight: normal;">No</span>
+                {% endif %}
+            </td>
+            <td>
+                {{ document.date }}
+            </td>
+            <td>
+                <a href="#" class="editButton">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                        class="bi bi-gear-fill text-secondary" viewBox="0 0 16 16" data-bs-toggle="modal"
+                        data-bs-target="#editBookmarks">
+                        <path
+                            d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z" />
+                    </svg>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal fade" id="editBookmarks" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel" style="font-weight: normal;"><i><span
+                            id="boomarkNameTitle"></span></i>
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body justify-content-center" id="modal-to-edit">
+                <form class="align-items-center" method="POST">
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-auto">
+                            <label for="bookmarkName" class="form-label">
+                                <h5 style="font-weight: normal;">Change name and URL of the bookmark</h5>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-auto">
+                            <input type="text" class="form-control form-control-lg m-2" id="editBookmarkName"
+                                name="editBookmarkName" placeholder="Bookmark name">
+                        </div>
+                    </div>
+                    <div class="row g-3 justify-content-center">
+                        <div class="col-auto">
+                            <input type="text" class="form-control form-control-lg m-2" id="editBookmarkURL"
+                                name="editBookmarkURL" placeholder="Bookmark URL">
+                        </div>
+                    </div>
+                    <div class="row g-3 justify-content-center">
+                        <div class="overflow-auto custom-scrollbar" style="max-height: 200px;">
+                            <!-- checkboxes go here -->
+                            {% for tag in editTags %}
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="{{ tag.name }}">
+                                <label class="form-check-label" for="{{ tag.name }}">
+                                    <span class="badge rounded-pill editTagBadge" style="background-color: #{{ tag.color }}; font-weight: normal;">{{ tag.name }}</span>
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="row g-3 m-2 justify-content-center">
+                        <div class="col-auto">
+                            <h6 style="font-weight: normal;">Bookmark name or URL cannot be a duplicate.</h6>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-danger" id="deleteBookmarkButton">Delete Bookmark</button>
+                <button type="button" class="btn btn-primary" id="saveChangesButton">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/bookmarks-table.js"></script>
+{% endblock %}

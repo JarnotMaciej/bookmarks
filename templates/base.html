@@ -1,19 +1,61 @@
+{% import "macros.html" as macros %}
+
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="{{ theme }}">
 
+{% block head %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookmarks</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <title>
+        {% block title %}Bookmarks{% endblock %}
+    </title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/custom-styling.css">
     <!-- Icon -->
     <link rel="icon" href="static/images/bookmark.png" type="image/png" sizes="16x16">
 </head>
+{% endblock %}
 
+{% block body %}
 <body>
-    {% with page=page %}
-    {% include 'navbar.html' %}
-    {% endwith %}
+    {% block navbar %}
+        {{ macros.main_nav('home')}}
+    {% endblock %}
     <div class="container-xl d-flex flex-column" style="min-height: 100vh; margin-top: 20pt;">
+        {% block content %}
+            {{ macros.nav_macro('Bookmarks') }}
+        {% endblock %}
+    </div>
+    {% block footer %}
+    <footer id="footer mt-auto py-3" class="bg-dark-subtle" style="margin-top: 12pt;">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <p class="text-center text-primary-emphasis" style="margin-top: 12pt;">Made with <svg
+                            xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                            class="bi bi-heart-fill text-danger" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd"
+                                d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+                        </svg></i> by <a href="https://github.com/JarnotMaciej" target="_blank">Maciej Jarnot</a></p>
+
+                    <p class="text-center text-primary">Powered by
+                        <a href="https://getbootstrap.com/" class="text-primary" target="_blank">Bootstrap</a>,
+                        <a href="https://www.mongodb.com/" class="text-primary" target="_blank">MongoDB</a> and <a
+                            href="https://flask.palletsprojects.com/en/2.0.x/" class="text-primary"
+                            target="_blank">Flask</a>
+                    </p>
+                    <p class="text-center text-secondary">Bookmark icon from <a href="https://icons8.com/"
+                            class="text-secondary" target="_blank">icons8</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    {% endblock %}
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/darkmode.js"></script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+{% endblock %}
