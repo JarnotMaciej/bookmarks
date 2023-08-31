@@ -1,34 +1,31 @@
-// darkmode.js
+const modeSwitch = document.getElementById('modeSwitch');
 
-document.addEventListener("DOMContentLoaded", function () {
-    const modeSwitch = document.getElementById("modeSwitch");
-    const body = document.querySelector("body");
+function setDarkMode() {
+    modeSwitch.innerHTML = 'Dark Mode';
+    document.documentElement.setAttribute('data-bs-theme', 'dark');
+    document.cookie = 'theme=dark; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/';
+}
 
-    modeSwitch.addEventListener("click", function () {
-        if (body.dataset.bsTheme === "dark") {
-            body.dataset.bsTheme = "light";
-            modeSwitch.textContent = "Dark Mode";
-        } else {
-            body.dataset.bsTheme = "dark";
-            modeSwitch.textContent = "Light Mode";
-        }
-    });
+function setLightMode() {
+    modeSwitch.innerHTML = 'Light Mode';
+    document.documentElement.removeAttribute('data-bs-theme');
+    document.cookie = 'theme=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+}
 
-    // Check local storage for the last selected mode
-    const savedTheme = localStorage.getItem("theme");
-    if (savedTheme) {
-        body.dataset.bsTheme = savedTheme;
-        if (savedTheme === "dark") {
-            modeSwitch.textContent = "Light Mode";
-        }
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if a theme cookie exists and set the initial theme accordingly
+    const themeCookie = document.cookie.match('(^|;) ?theme=([^;]*)(;|$)');
+    if (themeCookie && themeCookie[2] === 'dark') {
+        setDarkMode();
+    } else {
+        setLightMode();
     }
 });
 
-// Save the selected mode to local storage
-document.addEventListener("DOMContentLoaded", function () {
-    const body = document.querySelector("body");
-    body.addEventListener("themeChanged", function (event) {
-        const newTheme = event.detail.theme;
-        localStorage.setItem("theme", newTheme);
-    });
+modeSwitch.addEventListener('click', function() {
+    if (modeSwitch.innerHTML === 'Light Mode') {
+        setDarkMode();
+    } else {
+        setLightMode();
+    }
 });

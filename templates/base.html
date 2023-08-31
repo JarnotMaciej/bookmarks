@@ -1,7 +1,7 @@
 {% import "macros.html" as macros %}
 
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="{{ theme }}">
+<html lang="en" data-bs-theme="dark">
 
 {% block head %}
 <head>
@@ -10,7 +10,7 @@
     <title>
         {% block title %}Bookmarks{% endblock %}
     </title>
-    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/custom-styling.css">
     <!-- Icon -->
     <link rel="icon" href="static/images/bookmark.png" type="image/png" sizes="16x16">
@@ -27,6 +27,8 @@
             {{ macros.nav_macro('Bookmarks') }}
         {% endblock %}
     </div>
+
+    
     {% block footer %}
     <footer id="footer mt-auto py-3" class="bg-dark-subtle" style="margin-top: 12pt;">
         <div class="container-fluid">
@@ -53,7 +55,7 @@
     </footer>
 
     {% endblock %}
-    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
     <script src="/static/js/darkmode.js"></script>
     {% block scripts %}
     {% endblock %}
