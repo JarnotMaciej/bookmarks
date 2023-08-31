@@ -1,3 +1,33 @@
-{% include 'base.html' %}
-{% include 'settings-content.html' %}
-{% include 'footer.html' %}
+{% extends 'base.html' %}
+{% block navbar %}{{ macros.main_nav('')}}{% endblock %}
+{% block title %}Bookmarks | Settings{% endblock %}
+{% block content %}
+{{ macros.nav_macro('Export your bookmarks') }}
+<div class="row justify-content-center mb-3">
+    <div class="col-12 col-md-6">
+        <div class="text-center mb-3">
+            <div class="btn-group" role="group">
+                <button class="btn btn-primary" id="jsonExport">Default export</button>
+                <button class="btn btn-info" id="mdExport">Save bookmarks to MD file</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ macros.nav_macro('Import your bookmarks') }}
+<div class="row justify-content mb-3">
+    <form class="justify-content" method="POST" action="/bookmarks-json-import" enctype="multipart/form-data">
+        <div class="mb-3 m-4">
+            <label for="fileToImport" class="form-label">You can import only the bookmark files
+                exported by <i>Default export</i> button!</label>
+            <input class="form-control form-control-lg" id="fileToImport" type="file" name="fileToImport"
+                accept="application/json" required>
+        </div>
+        <div class="text-center mb-3 m-4">
+            <button class="btn btn-primary" id="jsonImport">Import bookmarks</button>
+        </div>
+    </form>
+</div>
+
+<script src="/static/js/settings-content.js"></script>
+{% endblock %}

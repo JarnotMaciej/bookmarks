@@ -1,3 +1,56 @@
-{% include 'base.html' %}
-{% include 'suggestion-cards.html' %}
-{% include 'footer.html' %}
+{% extends 'base.html' %}
+{% block navbar %}{{ macros.main_nav('suggestions')}}{% endblock %}
+{% block title %}Bookmarks | Suggestions{% endblock %}
+{% block content %}
+{{ macros.nav_macro('Suggestions', 'Generated: '+ generation_date) }}
+<div class="row mb-3">
+    <div class="accordion accordion-flush" id="accordionFlushExample">
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                    Used bookmarks
+                </button>
+            </h2>
+            <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    <ul class="list-group list-group-flush">
+                        {% for cb in chosen_bookmarks %}
+                        <li class="list-group-item">{{ cb }}</li>
+                        {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                    User definition
+                </button>
+            </h2>
+            <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                    You was defined as: <i>{{ user_definition }}</i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    {% for s in suggestions %}
+    <div class="col-sm-12 col-md-6 col-lg-4 mb-3">
+        <div class="card">
+            <div class="card-header">
+                {{ s.topic }}
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">{{ s.topic }}</h5>
+                <p class="card-text">{{ s.description }}</p>
+                <a href="https://www.bing.com/search?q={{ s.topic }}" target="_blank" class="btn btn-primary">Find out
+                    more!</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

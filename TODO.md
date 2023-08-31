@@ -1,22 +1,20 @@
-# Project
+# Bookmarks
 
-Project Description
-
-<em>[TODO.md spec & Kanban Board](https://bit.ly/3fCwKfM)</em>
+Convenient solution for managing your bookmarks.
 
 ### Todo
 
-- [ ] AI implementation for suggesting topics and tags  
-- [ ] fixing 'current site'  
+- [ ] mobile css improvement  
+- [ ] adjust displaying after filtering  
+- [ ] fix validation (wtforms?)  
 - [ ] allow to use signs like - or _  
 
 ### In Progress
 
-- [ ] filters on site -> query builder  
 
 ### Done ✓
 
-- [x] bookmark is visited after clicking at the link  
-- [x] date  
-- [x] changing shitty format to DatetimeMS  
+- [x] AI implementation for suggesting topics and tags  
+- [x] filters on site -> query builder  
+- [x] fixing 'current site'  
 

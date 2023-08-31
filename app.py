@@ -6,7 +6,6 @@ from pymongo import MongoClient
 import pytz
 from bson.datetime_ms import DatetimeMS
 from bson.codec_options import CodecOptions, DatetimeConversion
-# from flask_bootstrap import Bootstrap
 
 import utils.validation as validation
 import utils.normalization as normalization
@@ -37,7 +36,6 @@ bookmarks_collection = db[bookmarks_collection].with_options(codec_options=Codec
 tags_collection = db[tags_collection]
 topics_collection = db[topics_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
 
-current_page = 'home'
 sorting = [
     {'name': 'Bookmark name (A-Z)', 'value': 'nameAsc'},
     {'name': 'Bookmark name (Z-A)', 'value': 'nameDesc'},
@@ -106,7 +104,6 @@ def assign_tag_colors_and_transform_dates(bookmarks, tags):
 ### Routes ###
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    current_page = 'home'
     if request.method == 'POST':
         data = request.get_json()
         activeSorting = data.get('activeSorting')
@@ -126,7 +123,7 @@ def index():
         elif activeSorting == 'dateDesc':
             bookmarks = bookmarks_collection.find(query).sort('date', -1)
         else:
-            bookmarks = bookmarks_collection.find()  # Default sorting (if no activeSorting provided)
+            bookmarks = bookmarks_collection.find(query)  # Default sorting (if no activeSorting provided)
         modified_bookmarks = assign_tag_colors_and_transform_dates(bookmarks, tags_collection.find())
 
         for bookmark in modified_bookmarks:
@@ -136,36 +133,31 @@ def index():
     
     # This is the GET request handling
     bookmarks = bookmarks_collection.find().sort('name', 1)
+    # how many bookmarks are there in total
+    total_bookmarks = bookmarks_collection.count_documents({})
     tags = tags_collection.find().sort('name', 1)
     modified_bookmarks = assign_tag_colors_and_transform_dates(bookmarks, tags_collection.find())
-    return render_template('index.html', bookmarks=modified_bookmarks, page=current_page, editTags=tags, sorting=sorting)
+    return render_template('index.html', bookmarks=modified_bookmarks, editTags=tags, sorting=sorting, total_bookmarks=total_bookmarks)
 
 @app.route('/tags')
 def tags():
-    current_page = 'tags'
-
     # Fetch data from MongoDB
     tags = tags_collection.find().sort('name', 1)
 
-    return render_template('tags.html', tags=tags, page=current_page)
+    return render_template('tags.html', tags=tags)
 
 @app.route('/add-bookmark')
 def add_bookmark():
     tags = tags_collection.find().sort('name', 1)
-    current_page = 'tags'
 
-    return render_template('add-bookmark.html', page=current_page, tags=tags)
+    return render_template('add-bookmark.html', tags=tags)
 
 @app.route('/settings')
 def settings():
-    current_page = 'settings'
-
-    return render_template('settings.html', page=current_page)
+    return render_template('settings.html')
 
 @app.route('/suggestions')
 def suggestions():
-    current_page = 'suggestions'
-
     # Fetch data from MongoDB topics collection
     generated_suggestions = topics_collection.find().sort('date', -1).limit(1)
     # get topics array from the document
@@ -176,7 +168,7 @@ def suggestions():
     # change DatetimeMS(1691573948364) into format DD.MM.YYYY
     generation_date = generation_date.as_datetime().strftime("%d.%m.%Y")
 
-    return render_template('suggestions.html', page=current_page, suggestions=topic_suggestions, chosen_bookmarks=chosen_bookmarks, user_definition=user_definition, generation_date=generation_date)
+    return render_template('suggestions.html', suggestions=topic_suggestions, chosen_bookmarks=chosen_bookmarks, user_definition=user_definition, generation_date=generation_date)
 
 ##################
 
@@ -345,6 +337,10 @@ def page_not_found(error):
     # Custom error page template
     return render_template('error.html', error_code=404), 404
 
+@app.errorhandler(500)
+def page_not_found(error):
+    # Custom error page template
+    return render_template('error.html', error_code=500), 500
+
 if __name__ == '__main__':
-    # Bootstrap(app)
     app.run(host='0.0.0.0', port=app_port)
