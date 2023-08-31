@@ -123,7 +123,7 @@ def index():
         elif activeSorting == 'dateDesc':
             bookmarks = bookmarks_collection.find(query).sort('date', -1)
         else:
-            bookmarks = bookmarks_collection.find()  # Default sorting (if no activeSorting provided)
+            bookmarks = bookmarks_collection.find(query)  # Default sorting (if no activeSorting provided)
         modified_bookmarks = assign_tag_colors_and_transform_dates(bookmarks, tags_collection.find())
 
         for bookmark in modified_bookmarks:
@@ -133,9 +133,11 @@ def index():
     
     # This is the GET request handling
     bookmarks = bookmarks_collection.find().sort('name', 1)
+    # how many bookmarks are there in total
+    total_bookmarks = bookmarks_collection.count_documents({})
     tags = tags_collection.find().sort('name', 1)
     modified_bookmarks = assign_tag_colors_and_transform_dates(bookmarks, tags_collection.find())
-    return render_template('index.html', bookmarks=modified_bookmarks, editTags=tags, sorting=sorting)
+    return render_template('index.html', bookmarks=modified_bookmarks, editTags=tags, sorting=sorting, total_bookmarks=total_bookmarks)
 
 @app.route('/tags')
 def tags():
