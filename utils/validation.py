@@ -64,3 +64,15 @@ def validateImport(jsonInput):
             return False
         
     return True
+
+def update_boomark_validation(name, url, tags):
+    if not validate_bookmark_name(name): return False
+    if not validate_url(url): return False
+    if not validate_tags(tags): return False
+    return True
+
+def add_bookmark_validation(name, url, tags):
+    if not validate_bookmark_name(name): return False
+    if not validate_url(url): return False
+    if not validate_tags(tags): return False
+    return True

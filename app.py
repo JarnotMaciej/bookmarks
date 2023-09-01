@@ -184,14 +184,14 @@ def add_bookmark_execute():
     url = normalization.url_normalization(request.get_json().get('url'))
     tags = request.get_json().get('tags')
     
-    if validation.validate_bookmark_name(name) and validation.validate_url(url) and validation.validate_tags(tags):
+    if not validation.add_bookmark_validation(name, url, tags): return jsonify({'message': 'Invalid input'})
         # check if bookmark already exists
-        for bookmark in bookmarks_collection.find():
-            if bookmark['name'] == name:
-                return jsonify({'message': 'Bookmark already exists'})
-            if bookmark['url'] == url:
-                return jsonify({'message': 'Bookmark already exists'})
-        insert_bookmark(name, url, tags)
+    for bookmark in bookmarks_collection.find():
+        if bookmark['name'] == name:
+            return jsonify({'message': 'Bookmark already exists'})
+        if bookmark['url'] == url:
+            return jsonify({'message': 'Bookmark already exists'})
+    insert_bookmark(name, url, tags)
     
     return jsonify({'message': 'Bookmark added successfully'})
 
@@ -210,20 +210,19 @@ def update_bookmark():
     tags = request.get_json().get('tags')
     old_url = bookmarks_collection.find_one({'name': name})['url']
 
-    if validation.validate_bookmark_name(name) and validation.validate_url(url) and validation.validate_tags(tags):
-        # check if bookmark already exists
-        if name != name_to_update:
-            for bookmark in bookmarks_collection.find():
-                if bookmark['name'] == name_to_update:
-                    return jsonify({'message': 'Bookmark already exists'})
-        if url != old_url:
-            for bookmark in bookmarks_collection.find():
-                if bookmark['url'] == url:
-                    return jsonify({'message': 'Bookmark already exists'})
-        # delete all the tags from the bookmark
-        bookmarks_collection.update_one({'name': name}, {'$unset': {'tags': 1}})
-
-        bookmarks_collection.update_one({'name': name}, {'$set': {'name': name_to_update,'url': url, 'tags': tags}})
+    if not validation.update_boomark_validation(name_to_update, url, tags): return jsonify({'message': 'Invalid input'})
+    # check if bookmark already exists
+    if name != name_to_update:
+        for bookmark in bookmarks_collection.find():
+            if bookmark['name'] == name_to_update:
+                return jsonify({'message': 'Bookmark already exists'})
+    if url != old_url:
+        for bookmark in bookmarks_collection.find():
+            if bookmark['url'] == url:
+                return jsonify({'message': 'Bookmark already exists'})
+    # delete all the tags from the bookmark
+    bookmarks_collection.update_one({'name': name}, {'$unset': {'tags': 1}})
+    bookmarks_collection.update_one({'name': name}, {'$set': {'name': name_to_update,'url': url, 'tags': tags}})
 
     return jsonify({'message': 'Bookmark updated successfully'})
 
