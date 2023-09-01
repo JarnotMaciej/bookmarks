@@ -2,6 +2,8 @@
 {% block navbar %}{{ macros.main_nav('home')}}{% endblock %}
 {% block content %}
 {{ macros.nav_macro('Bookmarks') }}
+
+{% if bookmarks %}
 <div class="row justify-content-center">
     <ul class="nav nav-pills m-3">
         <div class="row align-items-start">
@@ -122,7 +124,9 @@
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" role="switch" id="{{ tag.name }}">
                                 <label class="form-check-label" for="{{ tag.name }}">
-                                    <span class="badge rounded-pill editTagBadge" style="background-color: #{{ tag.color }}; font-weight: normal;">{{ tag.name }}</span>
+                                    <span class="badge rounded-pill editTagBadge"
+                                        style="background-color: #{{ tag.color }}; font-weight: normal;">{{ tag.name
+                                        }}</span>
                                 </label>
                             </div>
                             {% endfor %}
@@ -143,6 +147,18 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="row justify-content-center m-3">
+    <div class="col-auto">
+        <h1 class="display-6">Looks like you don't have any bookmarks yet.</h1>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-auto">
+        <a href="/add-bookmark" class="btn btn-primary btn-lg m-3" role="button" aria-pressed="true">Add one now!</a>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

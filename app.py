@@ -143,8 +143,9 @@ def index():
 def tags():
     # Fetch data from MongoDB
     tags = tags_collection.find().sort('name', 1)
+    tags_count = len(list(tags))
 
-    return render_template('tags.html', tags=tags)
+    return render_template('tags.html', tags=tags, tags_count=tags_count)
 
 @app.route('/add-bookmark')
 def add_bookmark():
@@ -159,14 +160,19 @@ def settings():
 @app.route('/suggestions')
 def suggestions():
     # Fetch data from MongoDB topics collection
+    topic_suggestions = []
+    chosen_bookmarks = []
+    user_definition = ''
+    generation_date = ''
     generated_suggestions = topics_collection.find().sort('date', -1).limit(1)
-    # get topics array from the document
-    topic_suggestions = generated_suggestions[0]['topics']
-    chosen_bookmarks = generated_suggestions[0]['chosen-bookmarks']
-    user_definition = generated_suggestions[0]['user-definition'].title()
-    generation_date = generated_suggestions[0]['date']
-    # change DatetimeMS(1691573948364) into format DD.MM.YYYY
-    generation_date = generation_date.as_datetime().strftime("%d.%m.%Y")
+    if len(list(generated_suggestions)) > 0:
+            # get topics array from the document
+            topic_suggestions = generated_suggestions[0]['topics']
+            chosen_bookmarks = generated_suggestions[0]['chosen-bookmarks']
+            user_definition = generated_suggestions[0]['user-definition'].title()
+            generation_date = generated_suggestions[0]['date']
+            # change DatetimeMS(1691573948364) into format DD.MM.YYYY
+            generation_date = generation_date.as_datetime().strftime("%d.%m.%Y")
 
     return render_template('suggestions.html', suggestions=topic_suggestions, chosen_bookmarks=chosen_bookmarks, user_definition=user_definition, generation_date=generation_date)
 

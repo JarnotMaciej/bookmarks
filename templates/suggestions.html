@@ -2,6 +2,7 @@
 {% block navbar %}{{ macros.main_nav('suggestions')}}{% endblock %}
 {% block title %}Bookmarks | Suggestions{% endblock %}
 {% block content %}
+{% if generation_date %}
 {{ macros.nav_macro('Suggestions', 'Generated: '+ generation_date) }}
 <div class="row mb-3">
     <div class="accordion accordion-flush" id="accordionFlushExample">
@@ -53,4 +54,13 @@
     </div>
     {% endfor %}
 </div>
+{% else %}
+{{ macros.nav_macro('Suggestions') }}
+<div class="row justify-content-center m-3">
+    <div class="col-auto">
+        <h1 class="display-6">Looks like you don't have any suggestions yet.</h1>
+        <h6 class="display-6">Check your API key.</h6>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

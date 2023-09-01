@@ -30,29 +30,36 @@
 
     
     {% block footer %}
-    <footer id="footer mt-auto py-3" class="bg-dark-subtle" style="margin-top: 12pt;">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-12">
-                    <p class="text-center text-primary-emphasis" style="margin-top: 12pt;">Made with <svg
+<div class="container">
+  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+    <div class="col-md-4 d-flex align-items-center">
+      <a href="/" class="mb-3 me-2 mb-md-0 text-body-secondary text-decoration-none lh-1">
+        <img src="static/images/bookmark.png" alt="Logo" width="30" height="24"
+        class="d-inline-block align-text-top"></a>
+      <span class="mb-3 mb-md-0 text-body-secondary">
+        Made with <svg
                             xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                             class="bi bi-heart-fill text-danger" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
                                 d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
-                        </svg></i> by <a href="https://github.com/JarnotMaciej" target="_blank">Maciej Jarnot</a></p>
+                        </svg></i> by <a href="https://github.com/JarnotMaciej" target="_blank">Maciej Jarnot</a>
+      </span>
+    </div>
 
-                    <p class="text-center text-primary">Powered by
-                        <a href="https://getbootstrap.com/" class="text-primary" target="_blank">Bootstrap</a>,
-                        <a href="https://www.mongodb.com/" class="text-primary" target="_blank">MongoDB</a> and <a
-                            href="https://flask.palletsprojects.com/en/2.0.x/" class="text-primary"
-                            target="_blank">Flask</a>
-                    </p>
-                    <p class="text-center text-secondary">Bookmark icon from <a href="https://icons8.com/"
-                            class="text-secondary" target="_blank">icons8</a></p>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <div class="col-md-4 d-flex align-items-center">
+        <span class="mb-3 mb-md-0 text-body-secondary">
+            Powered by
+            <a href="https://getbootstrap.com/" class="text-primary" target="_blank">Bootstrap</a>,
+            <a href="https://www.mongodb.com/" class="text-primary" target="_blank">MongoDB</a> and <a
+                href="https://flask.palletsprojects.com/en/2.0.x/" class="text-primary"
+                target="_blank">Flask</a>
+                <br>
+                Bookmark icon provided by <a href="https://icons8.com/"
+                            class="text-secondary" target="_blank">icons8</a>
+            </span>
+      </div>
+  </footer>
+</div>
 
     {% endblock %}
     <script src="/static/js/bootstrap/bootstrap.bundle.min.js"></script>
@@ -61,3 +68,4 @@
     {% endblock %}
 </body>
 {% endblock %}
+

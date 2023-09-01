@@ -36,6 +36,7 @@
 </div>
 
 {{ macros.nav_macro('List of your tags') }}
+{% if tags_count > 0 %}
 <div class="container text-center">
     <div class="row align-items-start">
         <div class="col">
@@ -98,6 +99,16 @@
         </div>
     </div>
 </div>
+{% else %}
+<div class="container text-center">
+    <div class="row justify-content-center m-3">
+        <div class="col-auto">
+            <h5 class="m-3" style="font-weight: normal;">You don't have any tags yet!</h5>
+            <h6 class="m-3" style="font-weight: normal;">What about adding one?</h6>
+        </div>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 
 {% block scripts %}

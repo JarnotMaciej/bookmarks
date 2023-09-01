@@ -17,4 +17,5 @@ Convenient solution for managing your bookmarks.
 - [x] AI implementation for suggesting topics and tags  
 - [x] filters on site -> query builder  
 - [x] fixing 'current site'  
+- [x] blank pages  
 
