@@ -1,40 +1,26 @@
-from dotenv import load_dotenv
-import os
-from datetime import datetime, timezone
+from datetime import datetime
 from flask import Flask, json, render_template, request, jsonify, redirect, Response
 from pymongo import MongoClient
 import pytz
-from bson.datetime_ms import DatetimeMS
 from bson.codec_options import CodecOptions, DatetimeConversion
 
 import utils.validation as validation
 import utils.normalization as normalization
 import utils.migration as migration
+from utils.config import config
 
-load_dotenv()
-
-# Access the variables
-mongodb_host = os.getenv("MONGODB_HOST")
-mongodb_port = os.getenv("MONGODB_PORT")
-database = os.getenv("MONGODB_DB")
-bookmarks_collection = os.getenv("BOOKMARKS_COLLECTION")
-tags_collection = os.getenv("TAGS_COLLECTION")
-topics_collection = os.getenv("TOPICS_COLLECTION")
-app_port = os.getenv("APP_PORT")
-if app_port == None:
-    app_port = 4999
-env_timezone = os.getenv("TZ")
-if env_timezone == None:
-    env_timezone = 'UTC'
+config = config['development']
+# config = config['testing']
+# config = config['production']
 
 app = Flask(__name__)
 
-my_timezone = pytz.timezone(env_timezone)
-client = MongoClient(mongodb_host, int(mongodb_port))
-db = client[database]
-bookmarks_collection = db[bookmarks_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
-tags_collection = db[tags_collection]
-topics_collection = db[topics_collection].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
+my_timezone = pytz.timezone(config.TIME_ZONE)
+client = MongoClient(config.MONGO_HOST, int(config.MONGO_PORT))
+db = client[config.DATABASE]
+bookmarks_collection = db[config.BOOKMARKS_COLLECTION].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
+tags_collection = db[config.TAGS_COLLECTION]
+topics_collection = db[config.TOPICS_COLLECTION].with_options(codec_options=CodecOptions(tz_aware=True, tzinfo=my_timezone, datetime_conversion=DatetimeConversion.DATETIME_MS))
 
 sorting = [
     {'name': 'Bookmark name (A-Z)', 'value': 'nameAsc'},
@@ -348,4 +334,4 @@ def page_not_found(error):
     return render_template('error.html', error_code=500), 500
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=app_port)
+    app.run(host='0.0.0.0', port=config.APP_PORT, debug=config.DEBUG)
